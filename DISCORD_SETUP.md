@@ -5,6 +5,7 @@
 ### **Step 1: Create Discord Application**
 
 1. **Go to Discord Developer Portal**
+
    - Visit: https://discord.com/developers/applications
    - Log in with your Discord account
 
@@ -16,6 +17,7 @@
 ### **Step 2: Create Bot User**
 
 1. **Navigate to Bot Section**
+
    - In your application, click "Bot" in the left sidebar
    - Click "Add Bot" button
    - Confirm by clicking "Yes, do it!"
@@ -30,6 +32,7 @@
 ### **Step 3: Get Your Bot Token** 🔑
 
 1. **Copy the Token**
+
    - In the "Bot" section, find the "Token" area
    - Click "Reset Token" (if this is your first time)
    - Click "Copy" to copy your bot token
@@ -42,6 +45,7 @@
 ### **Step 4: Set Up Environment File** 📁
 
 1. **Copy the Example File**
+
    ```bash
    cp .env.example .env
    ```
@@ -51,23 +55,25 @@
 
    ```env
    # Replace with your actual bot token
-   DISCORD_TOKEN=MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.GhIjKl.MnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWx
+   DISCORD_TOKEN=YOUR_BOT_TOKEN_HERE
 
    # Replace with your application ID
-   CLIENT_ID=1234567890123456789
+   CLIENT_ID=YOUR_APPLICATION_ID_HERE
 
    # Optional: Replace with your test server ID for faster development
-   GUILD_ID=9876543210987654321
+   GUILD_ID=YOUR_GUILD_ID_HERE
    ```
 
    **Example of what your token looks like:**
+
    - Tokens are long strings with dots (.)
-   - Format: `MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.GhIjKl.MnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWx`
+   - Format: `EXAMPLE.TOKEN.HERE_WITH_DOTS_AND_CHARACTERS`
    - They contain letters, numbers, and special characters
 
 ### **Step 5: Invite Bot to Your Server** 🏠
 
 1. **Generate Invite Link**
+
    - In Discord Developer Portal, go to "OAuth2" > "URL Generator"
    - **Scopes**: Check `bot` and `applications.commands`
    - **Bot Permissions**: Check these permissions:
@@ -86,16 +92,19 @@
 ### **Step 6: Test Your Setup** ✅
 
 1. **Install Dependencies**
+
    ```bash
    npm install
    ```
 
 2. **Test Configuration**
+
    ```bash
    npm run test
    ```
 
 3. **Deploy Commands**
+
    ```bash
    npm run deploy-commands
    ```
@@ -108,12 +117,14 @@
 ## 🔒 **Security Best Practices**
 
 ### **Keep Your Token Safe**
+
 - ✅ Never commit `.env` file to Git
 - ✅ Never share your token in Discord, forums, or code
 - ✅ Use environment variables in production
 - ✅ Regenerate token if accidentally exposed
 
 ### **File Structure**
+
 ```
 your-project/
 ├── .env                 ← Your actual tokens (NEVER commit this!)
@@ -123,21 +134,23 @@ your-project/
 ```
 
 ### **What NOT to Do** ❌
+
 ```javascript
 // DON'T hardcode tokens in your code!
-const token = "MTIzNDU2Nzg5MDEyMzQ1Njc4OTA.GhIjKl.MnOpQrStUvWxYzAbCdEfGhIjKlMnOpQrStUvWx";
+const token = "YOUR_ACTUAL_TOKEN_HERE";
 
 // DON'T commit .env files
 git add .env  // ❌ NEVER DO THIS!
 ```
 
 ### **What TO Do** ✅
+
 ```javascript
 // DO use environment variables
 const token = process.env.DISCORD_TOKEN;
 
 // DO use .env files locally
-require('dotenv').config();
+require("dotenv").config();
 ```
 
 ## 🚨 **Troubleshooting**
@@ -145,15 +158,18 @@ require('dotenv').config();
 ### **Common Issues**
 
 1. **"Invalid Token" Error**
+
    - Double-check your token in `.env`
    - Make sure there are no extra spaces
    - Try regenerating the token
 
 2. **"Missing Permissions" Error**
+
    - Re-invite bot with correct permissions
    - Check server permissions for the bot
 
 3. **Commands Not Appearing**
+
    - Run `npm run deploy-commands`
    - Wait a few minutes for Discord to update
    - Try removing and re-adding the bot
@@ -168,10 +184,12 @@ require('dotenv').config();
 If you're still having issues:
 
 1. **Check the Console**
+
    - Look for error messages when starting the bot
    - Common errors will have helpful messages
 
 2. **Verify Your Setup**
+
    ```bash
    npm run test-all
    ```
@@ -183,6 +201,7 @@ If you're still having issues:
 ## 🎉 **Success!**
 
 Once everything is working, you should see:
+
 - ✅ Bot shows as "Online" in Discord
 - ✅ Slash commands appear when typing `/tarot`
 - ✅ Bot responds to commands with beautiful tarot readings
