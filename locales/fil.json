@@ -1,0 +1,56 @@
+{
+  "commands": {
+    "tarot": {
+      "name": "tarot",
+      "description": "Kumuha ng mystical na tarot reading",
+      "single": {
+        "name": "single",
+        "description": "Kumuha ng isang card para sa gabay"
+      },
+      "daily": {
+        "name": "daily",
+        "description": "Araw-araw na gabay card"
+      }
+    },
+    "journal": {
+      "name": "journal",
+      "description": "Pamahalaan ang inyong personal na tarot reading journal"
+    },
+    "reminder": {
+      "name": "reminder",
+      "description": "Mag-set ng personal na tarot reading reminders"
+    }
+  },
+  "messages": {
+    "cooldown": "Kailangan ng mga card ng oras para mag-recharge... Maghintay ng {time} segundo.",
+    "welcome": "Maligayang pagdating sa inyong mystical na tarot journey! 🔮",
+    "error": "May problema sa mystical energies. Subukan ulit.",
+    "reading_saved": "Ang inyong reading ay na-save sa journal.",
+    "reminder_set": "Ang inyong reminder ay na-set para sa {time}.",
+    "no_readings": "Wala pa kayong readings. Simulan ang journey sa /tarot!",
+    "ai_enhanced": "Pinahusay ng AI insights",
+    "for_entertainment": "Para sa entertainment lamang"
+  },
+  "cards": {
+    "upright": "Tuwid",
+    "reversed": "Baliktad",
+    "keywords": "Mga Keyword",
+    "meaning": "Kahulugan",
+    "position": "Posisyon"
+  },
+  "spreads": {
+    "single": "Isang Card",
+    "three_card": "Tatlong Card Spread",
+    "celtic_cross": "Celtic Cross",
+    "daily": "Araw-araw na Card",
+    "custom": "Custom Spread"
+  },
+  "time": {
+    "seconds": "segundo",
+    "minutes": "minuto",
+    "hours": "oras",
+    "days": "araw",
+    "weeks": "linggo",
+    "months": "buwan"
+  }
+}

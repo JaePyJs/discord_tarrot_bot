@@ -1,0 +1,48 @@
+{
+  "name": "discord-tarot-bot",
+  "version": "2.2.0",
+  "description": "A Discord bot that provides tarot card readings for entertainment purposes",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "deploy-commands": "node deploy-commands.js",
+    "test": "node test-setup.js",
+    "test-all": "node test-all-features.js",
+    "setup": "node setup.js",
+    "setup-db": "node -e \"require('./database/init').initializeDatabase().then(() => console.log('Database initialized')).catch(console.error)\"",
+    "quick-setup": "npm install && node test-setup.js",
+    "migrate": "node scripts/migrate-to-v2.1.0.js",
+    "test-v2.1.0": "node test-v2.1.0-features.js",
+    "migrate-v2.2.0": "node scripts/migrate-to-v2.2.0.js",
+    "test-v2.2.0": "node test-v2.2.0-features.js",
+    "test-divination": "node test-divination-methods.js",
+    "test-analytics": "node test-analytics-features.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "tarot",
+    "entertainment"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "sqlite3": "^5.1.6",
+    "pg": "^8.11.3",
+    "pg-pool": "^3.6.1",
+    "dotenv": "^16.3.1",
+    "node-cron": "^3.0.3",
+    "node-fetch": "^3.3.2",
+    "moment-timezone": "^0.5.43",
+    "bcrypt": "^5.1.1",
+    "joi": "^17.11.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

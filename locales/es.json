@@ -1,0 +1,22 @@
+{
+  "commands": {
+    "tarot": {
+      "name": "tarot",
+      "description": "Obtén una lectura mística de tarot",
+      "single": {
+        "name": "single",
+        "description": "Saca una carta para orientación"
+      },
+      "daily": {
+        "name": "daily",
+        "description": "Carta de orientación diaria"
+      }
+    }
+  },
+  "messages": {
+    "cooldown": "Las cartas necesitan tiempo para recargarse... Espera {time} segundos.",
+    "welcome": "¡Bienvenido a tu viaje místico del tarot! 🔮",
+    "error": "Algo salió mal con las energías místicas. Inténtalo de nuevo.",
+    "for_entertainment": "Solo para entretenimiento"
+  }
+}

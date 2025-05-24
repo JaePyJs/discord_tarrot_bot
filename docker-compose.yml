@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  tarot-bot:
+    build: .
+    container_name: discord-tarot-bot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      - ./database:/app/database
+    networks:
+      - tarot-network
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Bot is healthy')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+networks:
+  tarot-network:
+    driver: bridge
+
+volumes:
+  database:
+    driver: local

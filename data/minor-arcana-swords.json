@@ -1,0 +1,212 @@
+[
+  {
+    "id": 50,
+    "name": "Ace of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["breakthrough", "clarity", "sharp mind", "new ideas"],
+      "meaning": "The Ace of Swords represents breakthrough, clarity, sharp mind, new ideas, and mental clarity cutting through confusion."
+    },
+    "reversed": {
+      "keywords": ["inner clarity", "re-thinking an idea", "clouded judgement", "confusion"],
+      "meaning": "The Ace of Swords reversed represents inner clarity, re-thinking an idea, clouded judgement, and mental confusion."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/Swords01.jpg"
+  },
+  {
+    "id": 51,
+    "name": "Two of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["difficult decisions", "weighing up options", "an impasse", "avoidance"],
+      "meaning": "The Two of Swords represents difficult decisions, weighing up options, an impasse, avoidance, and being stuck between choices."
+    },
+    "reversed": {
+      "keywords": ["indecision", "confusion", "information overload", "postponing decisions"],
+      "meaning": "The Two of Swords reversed represents indecision, confusion, information overload, and postponing important decisions."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Swords02.jpg"
+  },
+  {
+    "id": 52,
+    "name": "Three of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["heartbreak", "emotional pain", "sorrow", "grief"],
+      "meaning": "The Three of Swords represents heartbreak, emotional pain, sorrow, grief, and the need to process difficult emotions."
+    },
+    "reversed": {
+      "keywords": ["negative self-talk", "releasing pain", "optimism", "forgiveness"],
+      "meaning": "The Three of Swords reversed represents negative self-talk, releasing pain, optimism, forgiveness, and healing from heartbreak."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Swords03.jpg"
+  },
+  {
+    "id": 53,
+    "name": "Four of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["rest", "relaxation", "meditation", "contemplation"],
+      "meaning": "The Four of Swords represents rest, relaxation, meditation, contemplation, and taking time to recharge and reflect."
+    },
+    "reversed": {
+      "keywords": ["exhaustion", "burn-out", "deep contemplation", "stagnation"],
+      "meaning": "The Four of Swords reversed represents exhaustion, burn-out, deep contemplation, and mental stagnation."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Swords04.jpg"
+  },
+  {
+    "id": 54,
+    "name": "Five of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["conflict", "disagreements", "competition", "defeat"],
+      "meaning": "The Five of Swords represents conflict, disagreements, competition, defeat, and winning at all costs with hollow victory."
+    },
+    "reversed": {
+      "keywords": ["reconciliation", "making amends", "past resentment", "conflict resolution"],
+      "meaning": "The Five of Swords reversed represents reconciliation, making amends, past resentment, and working toward conflict resolution."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/23/Swords05.jpg"
+  },
+  {
+    "id": 55,
+    "name": "Six of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["transition", "change", "rite of passage", "releasing baggage"],
+      "meaning": "The Six of Swords represents transition, change, rite of passage, releasing baggage, and moving toward calmer waters."
+    },
+    "reversed": {
+      "keywords": ["personal transition", "resistance to change", "unfinished business", "seeking closure"],
+      "meaning": "The Six of Swords reversed represents personal transition, resistance to change, unfinished business, and seeking closure."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Swords06.jpg"
+  },
+  {
+    "id": 56,
+    "name": "Seven of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["betrayal", "deception", "getting away with something", "acting strategically"],
+      "meaning": "The Seven of Swords represents betrayal, deception, getting away with something, acting strategically, and stealth or cunning."
+    },
+    "reversed": {
+      "keywords": ["imposter syndrome", "self-deceit", "keeping secrets", "getting away with it"],
+      "meaning": "The Seven of Swords reversed represents imposter syndrome, self-deceit, keeping secrets, and guilt about getting away with something."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/34/Swords07.jpg"
+  },
+  {
+    "id": 57,
+    "name": "Eight of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["negative thinking", "restricted freedom", "imprisonment", "victim mentality"],
+      "meaning": "The Eight of Swords represents negative thinking, restricted freedom, imprisonment, victim mentality, and feeling trapped by circumstances."
+    },
+    "reversed": {
+      "keywords": ["self-limiting beliefs", "inner critic", "releasing negative thoughts", "open to new perspectives"],
+      "meaning": "The Eight of Swords reversed represents self-limiting beliefs, inner critic, releasing negative thoughts, and opening to new perspectives."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a7/Swords08.jpg"
+  },
+  {
+    "id": 58,
+    "name": "Nine of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["anxiety", "worry", "fear", "depression"],
+      "meaning": "The Nine of Swords represents anxiety, worry, fear, depression, and being overwhelmed by negative thoughts and nightmares."
+    },
+    "reversed": {
+      "keywords": ["inner turmoil", "deep-seated fears", "secrets", "releasing worry"],
+      "meaning": "The Nine of Swords reversed represents inner turmoil, deep-seated fears, secrets, and beginning to release worry and anxiety."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Swords09.jpg"
+  },
+  {
+    "id": 59,
+    "name": "Ten of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["painful endings", "deep wounds", "betrayal", "loss"],
+      "meaning": "The Ten of Swords represents painful endings, deep wounds, betrayal, loss, and hitting rock bottom before renewal."
+    },
+    "reversed": {
+      "keywords": ["recovery", "regeneration", "resisting an inevitable end", "surviving disaster"],
+      "meaning": "The Ten of Swords reversed represents recovery, regeneration, resisting an inevitable end, and surviving disaster to start anew."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Swords10.jpg"
+  },
+  {
+    "id": 60,
+    "name": "Page of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["new ideas", "curiosity", "thirst for knowledge", "new ways of communicating"],
+      "meaning": "The Page of Swords represents new ideas, curiosity, thirst for knowledge, new ways of communicating, and intellectual exploration."
+    },
+    "reversed": {
+      "keywords": ["self-expression", "all talk and no action", "haste", "scattered thoughts"],
+      "meaning": "The Page of Swords reversed represents self-expression, all talk and no action, haste, and scattered thoughts without focus."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4c/Swords11.jpg"
+  },
+  {
+    "id": 61,
+    "name": "Knight of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["ambitious", "action-oriented", "driven to succeed", "fast-thinking"],
+      "meaning": "The Knight of Swords represents ambitious, action-oriented, driven to succeed, fast-thinking, and charging ahead with determination."
+    },
+    "reversed": {
+      "keywords": ["restless", "unfocused", "impulsive", "burn-out"],
+      "meaning": "The Knight of Swords reversed represents restless, unfocused, impulsive, burn-out, and reckless pursuit without planning."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Swords12.jpg"
+  },
+  {
+    "id": 62,
+    "name": "Queen of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["independent", "unbiased judgement", "clear boundaries", "direct communication"],
+      "meaning": "The Queen of Swords represents independent, unbiased judgement, clear boundaries, direct communication, and intellectual clarity."
+    },
+    "reversed": {
+      "keywords": ["overly-emotional", "easily influenced", "bitchy", "cold-hearted"],
+      "meaning": "The Queen of Swords reversed represents overly-emotional, easily influenced, bitchy, cold-hearted, and harsh in communication."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d4/Swords13.jpg"
+  },
+  {
+    "id": 63,
+    "name": "King of Swords",
+    "arcana": "minor",
+    "suit": "swords",
+    "upright": {
+      "keywords": ["intellectual power", "clear thinking", "truth", "authority"],
+      "meaning": "The King of Swords represents intellectual power, clear thinking, truth, authority, and mastery of the mind and communication."
+    },
+    "reversed": {
+      "keywords": ["quiet power", "inner truth", "misuse of power", "manipulation"],
+      "meaning": "The King of Swords reversed represents quiet power, inner truth, misuse of power, manipulation, and abuse of intellectual authority."
+    },
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/3/33/Swords14.jpg"
+  }
+]

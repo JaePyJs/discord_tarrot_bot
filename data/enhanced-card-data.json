@@ -1,0 +1,144 @@
+{
+  "courtCardPersonalities": {
+    "page_of_cups": {
+      "personality": "The Page of Cups is a dreamy, intuitive young person who is deeply connected to their emotions and creativity. They are often artistic, compassionate, and have a strong imagination.",
+      "characteristics": ["Creative", "Intuitive", "Emotional", "Artistic", "Compassionate"],
+      "element": "Water",
+      "astrological_association": "Water signs (Cancer, Scorpio, Pisces)",
+      "meditation": "Focus on emotional healing and creative expression. Visualize flowing water cleansing your emotional body.",
+      "crystals": ["Moonstone", "Rose Quartz", "Aquamarine"],
+      "symbolism": "The cup represents emotional receptivity, the fish symbolizes intuition and the subconscious mind."
+    },
+    "knight_of_cups": {
+      "personality": "The Knight of Cups is a romantic idealist who follows their heart. They are charming, artistic, and often pursue their dreams with passion and emotion.",
+      "characteristics": ["Romantic", "Idealistic", "Charming", "Artistic", "Passionate"],
+      "element": "Water",
+      "astrological_association": "Water signs in motion",
+      "meditation": "Meditate on following your heart's true calling while maintaining emotional balance.",
+      "crystals": ["Labradorite", "Amazonite", "Blue Lace Agate"],
+      "symbolism": "The white horse represents purity of emotion, the flowing river symbolizes the flow of feelings."
+    },
+    "queen_of_cups": {
+      "personality": "The Queen of Cups is emotionally mature, intuitive, and nurturing. She has mastered her emotions and uses her intuition to help others.",
+      "characteristics": ["Nurturing", "Intuitive", "Emotionally mature", "Compassionate", "Psychic"],
+      "element": "Water",
+      "astrological_association": "Cancer",
+      "meditation": "Practice loving-kindness meditation, sending compassion to yourself and others.",
+      "crystals": ["Moonstone", "Pearl", "Selenite"],
+      "symbolism": "The ornate cup represents emotional mastery, the throne by water shows emotional stability."
+    },
+    "king_of_cups": {
+      "personality": "The King of Cups is emotionally balanced and wise. He has learned to control his emotions while remaining compassionate and understanding.",
+      "characteristics": ["Emotionally balanced", "Wise", "Compassionate", "Diplomatic", "Calm"],
+      "element": "Water",
+      "astrological_association": "Scorpio",
+      "meditation": "Focus on emotional mastery and using your wisdom to guide others with compassion.",
+      "crystals": ["Sapphire", "Lapis Lazuli", "Sodalite"],
+      "symbolism": "The calm sea represents emotional control, the fish pendant shows connection to the subconscious."
+    },
+    "page_of_wands": {
+      "personality": "The Page of Wands is enthusiastic, creative, and full of potential. They are eager to learn and explore new opportunities with boundless energy.",
+      "characteristics": ["Enthusiastic", "Creative", "Energetic", "Curious", "Optimistic"],
+      "element": "Fire",
+      "astrological_association": "Fire signs (Aries, Leo, Sagittarius)",
+      "meditation": "Visualize your creative fire burning brightly, illuminating new paths and possibilities.",
+      "crystals": ["Carnelian", "Citrine", "Sunstone"],
+      "symbolism": "The sprouting wand represents new creative growth, the desert landscape shows potential waiting to bloom."
+    },
+    "knight_of_wands": {
+      "personality": "The Knight of Wands is impulsive, adventurous, and passionate. They charge forward with great energy but may lack patience and planning.",
+      "characteristics": ["Impulsive", "Adventurous", "Passionate", "Energetic", "Impatient"],
+      "element": "Fire",
+      "astrological_association": "Fire signs in action",
+      "meditation": "Channel your fiery energy constructively, learning to balance action with wisdom.",
+      "crystals": ["Red Jasper", "Garnet", "Ruby"],
+      "symbolism": "The rearing horse represents unbridled passion, the desert shows the need for direction."
+    },
+    "queen_of_wands": {
+      "personality": "The Queen of Wands is confident, charismatic, and determined. She is a natural leader who inspires others with her warmth and vision.",
+      "characteristics": ["Confident", "Charismatic", "Determined", "Independent", "Inspiring"],
+      "element": "Fire",
+      "astrological_association": "Leo",
+      "meditation": "Embrace your inner fire and leadership qualities, radiating confidence and warmth to others.",
+      "crystals": ["Sunstone", "Tiger's Eye", "Amber"],
+      "symbolism": "The sunflowers represent joy and vitality, the black cat shows intuition combined with confidence."
+    },
+    "king_of_wands": {
+      "personality": "The King of Wands is a natural leader with vision and charisma. He has learned to channel his fiery energy into successful ventures and inspiring leadership.",
+      "characteristics": ["Visionary", "Charismatic", "Leader", "Entrepreneurial", "Inspiring"],
+      "element": "Fire",
+      "astrological_association": "Sagittarius",
+      "meditation": "Focus on your leadership abilities and how you can inspire others to achieve their highest potential.",
+      "crystals": ["Citrine", "Pyrite", "Golden Topaz"],
+      "symbolism": "The salamanders represent transformation through fire, the throne shows mastery of creative power."
+    }
+  },
+  "moonPhases": {
+    "new_moon": {
+      "energy": "New beginnings, setting intentions, planting seeds",
+      "reading_influence": "Focus on new starts and fresh perspectives",
+      "meditation": "Set intentions for the lunar cycle ahead"
+    },
+    "waxing_crescent": {
+      "energy": "Growth, building momentum, taking action",
+      "reading_influence": "Time for taking first steps toward goals",
+      "meditation": "Visualize your intentions growing stronger"
+    },
+    "first_quarter": {
+      "energy": "Challenges, decisions, perseverance",
+      "reading_influence": "Overcome obstacles and make important choices",
+      "meditation": "Find strength to push through difficulties"
+    },
+    "waxing_gibbous": {
+      "energy": "Refinement, adjustment, patience",
+      "reading_influence": "Fine-tune your approach and stay committed",
+      "meditation": "Practice patience and trust in the process"
+    },
+    "full_moon": {
+      "energy": "Culmination, manifestation, heightened intuition",
+      "reading_influence": "Peak energy for manifestation and insight",
+      "meditation": "Celebrate achievements and release what no longer serves"
+    },
+    "waning_gibbous": {
+      "energy": "Gratitude, sharing wisdom, giving back",
+      "reading_influence": "Share your knowledge and express gratitude",
+      "meditation": "Reflect on lessons learned and wisdom gained"
+    },
+    "last_quarter": {
+      "energy": "Release, forgiveness, letting go",
+      "reading_influence": "Time to release old patterns and forgive",
+      "meditation": "Practice forgiveness and release negative energy"
+    },
+    "waning_crescent": {
+      "energy": "Rest, reflection, preparation",
+      "reading_influence": "Take time for introspection and rest",
+      "meditation": "Prepare for the next cycle with quiet reflection"
+    }
+  },
+  "crystalPairings": {
+    "major_arcana": {
+      "the_fool": ["Clear Quartz", "Herkimer Diamond", "Fluorite"],
+      "the_magician": ["Citrine", "Clear Quartz", "Carnelian"],
+      "the_high_priestess": ["Moonstone", "Labradorite", "Amethyst"],
+      "the_empress": ["Rose Quartz", "Emerald", "Green Aventurine"],
+      "the_emperor": ["Red Jasper", "Hematite", "Garnet"],
+      "the_hierophant": ["Sapphire", "Lapis Lazuli", "Sodalite"],
+      "the_lovers": ["Rose Quartz", "Rhodonite", "Green Aventurine"],
+      "the_chariot": ["Black Tourmaline", "Hematite", "Tiger's Eye"],
+      "strength": ["Citrine", "Sunstone", "Leo Birthstones"],
+      "the_hermit": ["Peridot", "Virgo Birthstones", "Smoky Quartz"],
+      "wheel_of_fortune": ["Amethyst", "Labradorite", "Jupiter stones"],
+      "justice": ["Jade", "Bloodstone", "Libra Birthstones"],
+      "the_hanged_man": ["Aquamarine", "Beryl", "Neptune stones"],
+      "death": ["Obsidian", "Apache Tear", "Scorpio Birthstones"],
+      "temperance": ["Amethyst", "Fluorite", "Sagittarius Birthstones"],
+      "the_devil": ["Black Tourmaline", "Obsidian", "Capricorn Birthstones"],
+      "the_tower": ["Ruby", "Garnet", "Mars stones"],
+      "the_star": ["Aquamarine", "Celestite", "Aquarius Birthstones"],
+      "the_moon": ["Moonstone", "Pearl", "Pisces Birthstones"],
+      "the_sun": ["Sunstone", "Citrine", "Sun stones"],
+      "judgement": ["Fire Opal", "Malachite", "Pluto stones"],
+      "the_world": ["Onyx", "Jet", "Saturn stones"]
+    }
+  }
+}
