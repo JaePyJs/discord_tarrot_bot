@@ -1,6 +1,6 @@
 {
   "name": "discord-tarot-bot",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "description": "A Discord bot that provides tarot card readings for entertainment purposes",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "test": "node test-setup.js",
     "test-all": "node test-all-features.js",
     "setup": "node setup.js",
-    "setup-db": "node -e \"require('./database/init').initializeDatabase().then(() => console.log('Database initialized')).catch(console.error)\"",
+    "setup-db": "node -e \"require('./src/database/init').initializeDatabase().then(() => console.log('Database initialized')).catch(console.error)\"",
     "quick-setup": "npm install && node test-setup.js",
     "migrate": "node scripts/migrate-to-v2.1.0.js",
     "test-v2.1.0": "node test-v2.1.0-features.js",
