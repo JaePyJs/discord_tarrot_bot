@@ -14,6 +14,7 @@ const logger = require("../utils/logger");
 const analytics = require("../utils/analytics");
 const DailyCardManager = require("../utils/dailyCard");
 const ReminderManager = require("../utils/reminderManager");
+const { handleButtonInteraction } = require("../utils/buttonHandlers");
 
 // Create a new client instance
 const client = new Client({
@@ -102,6 +103,38 @@ client.once("ready", async () => {
 
 // Event: Handle interactions (commands and autocomplete)
 client.on("interactionCreate", async (interaction) => {
+  // Handle button interactions
+  if (interaction.isButton()) {
+    try {
+      const startTime = Date.now();
+      await handleButtonInteraction(interaction);
+      const executionTime = Date.now() - startTime;
+
+      logger.debug(`Button interaction handled: ${interaction.customId}`, {
+        executionTime: `${executionTime}ms`,
+        userId: interaction.user.id,
+      });
+    } catch (error) {
+      logger.error("Error handling button interaction:", error);
+      
+      const errorMessage = {
+        content: "🚫 There was an error processing your button interaction! The spirits seem disturbed...",
+        ephemeral: true,
+      };
+
+      try {
+        if (interaction.replied || interaction.deferred) {
+          await interaction.followUp(errorMessage);
+        } else {
+          await interaction.reply(errorMessage);
+        }
+      } catch (followUpError) {
+        logger.error("Failed to send button error message:", followUpError);
+      }
+    }
+    return;
+  }
+
   // Handle autocomplete interactions
   if (interaction.isAutocomplete()) {
     const command = client.commands.get(interaction.commandName);

@@ -1,10 +1,20 @@
-const { SlashCommandBuilder, EmbedBuilder } = require("discord.js");
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+} = require("discord.js");
 const cardUtils = require("../../utils/cardUtils");
 const DatabaseManager = require("../../database/DatabaseManager");
 const logger = require("../../utils/logger");
 const analytics = require("../../utils/analytics");
 const AstrologyUtils = require("../../utils/astrology");
+const AIInterpretationEngine = require("../../utils/aiInterpretation");
 const enhancedCardData = require("../../data/enhanced-card-data.json");
+
+// Initialize AI Engine
+const aiEngine = new AIInterpretationEngine();
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -14,39 +24,137 @@ module.exports = {
       subcommand
         .setName("single")
         .setDescription("Draw a single card for guidance")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private (only you can see it)")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation (if available)")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("three-card")
         .setDescription("Past, Present, Future spread")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("celtic-cross")
         .setDescription("Full 10-card Celtic Cross spread")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("horseshoe")
         .setDescription("7-card Horseshoe spread for general guidance")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("relationship")
         .setDescription("6-card spread focused on relationships")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("yes-no")
         .setDescription("Simple yes/no answer to your question")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
-      subcommand.setName("daily").setDescription("Daily guidance card")
+      subcommand
+        .setName("daily")
+        .setDescription("Daily guidance card")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
         .setName("career")
         .setDescription("5-card spread for career guidance")
+        .addBooleanOption((option) =>
+          option
+            .setName("private")
+            .setDescription("Make this reading private")
+            .setRequired(false)
+        )
+        .addBooleanOption((option) =>
+          option
+            .setName("ai-enhanced")
+            .setDescription("Get AI-enhanced interpretation")
+            .setRequired(false)
+        )
     )
     .addSubcommand((subcommand) =>
       subcommand
@@ -96,8 +204,12 @@ module.exports = {
         return await interaction.reply({ embeds: [embed], ephemeral: true });
       }
 
+      // Get options
+      const isPrivate = interaction.options.getBoolean("private") || false;
+      const aiEnhanced = interaction.options.getBoolean("ai-enhanced") || false;
+
       // Defer reply for longer operations
-      await interaction.deferReply();
+      await interaction.deferReply({ ephemeral: isPrivate });
 
       let cards = [];
       let readingType = "";
@@ -158,14 +270,79 @@ module.exports = {
       // Log the reading
       logger.logReading(userId, guildId, readingType, cards);
 
+      // Get AI interpretation if requested and available
+      let aiInterpretation = null;
+      if (aiEnhanced && aiEngine.isAvailable()) {
+        try {
+          const userContext = await this.buildUserContext(userId, db);
+          aiInterpretation = await aiEngine.generateInterpretation(
+            cards,
+            readingType,
+            userContext
+          );
+        } catch (error) {
+          logger.error("AI interpretation failed:", error);
+        }
+      }
+
       // Create response embeds with enhanced features
       const embeds = await this.createReadingEmbeds(
         cards,
         readingType,
-        interaction.user
+        interaction.user,
+        {
+          aiInterpretation,
+          isPrivate,
+          aiEnhanced: aiEnhanced && aiEngine.isAvailable(),
+        }
       );
 
-      await interaction.editReply({ embeds });
+      // Create navigation buttons for multi-card readings
+      const components = [];
+      
+      // Add navigation buttons for multi-card spreads
+      if (cards.length > 1 && !isPrivate) {
+        const readingId = `${interaction.user.id}_${Date.now()}`;
+        const navRow = new ActionRowBuilder()
+          .addComponents(
+            new ButtonBuilder()
+              .setCustomId(`prev_${readingId}_0`)
+              .setLabel('◀ Previous')
+              .setStyle(ButtonStyle.Secondary)
+              .setDisabled(true), // Start disabled
+            new ButtonBuilder()
+              .setCustomId(`overview_${readingId}_0`)
+              .setLabel('📋 Overview')
+              .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+              .setCustomId(`next_${readingId}_0`)
+              .setLabel('Next ▶')
+              .setStyle(ButtonStyle.Secondary)
+              .setDisabled(cards.length <= 1),
+            new ButtonBuilder()
+              .setCustomId(`favorite_${readingId}_0`)
+              .setLabel('⭐ Favorite')
+              .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+              .setCustomId(`share_${readingId}_0`)
+              .setLabel('📤 Share')
+              .setStyle(ButtonStyle.Secondary)
+          );
+        components.push(navRow);
+      }
+
+      // Create action buttons for community features
+      const actionRow = this.createActionButtons(readingType, isPrivate);
+      if (actionRow && !isPrivate) {
+        components.push(actionRow);
+      }
+
+      const response = { embeds };
+      if (components.length > 0) {
+        response.components = components;
+      }
+
+      await interaction.editReply(response);
     } catch (error) {
       console.error("Error in tarot command:", error);
 
@@ -263,21 +440,28 @@ module.exports = {
     await interaction.reply({ embeds: [helpEmbed] });
   },
 
-  async createReadingEmbeds(cards, readingType, user) {
+  async createReadingEmbeds(cards, readingType, user, options = {}) {
     const embeds = [];
     const emoji = cardUtils.getReadingEmoji(readingType);
     const astrology = new AstrologyUtils();
+    const { aiInterpretation, isPrivate, aiEnhanced } = options;
 
-    // Main embed with reading info
+    // Enhanced main embed with modern styling
     const mainEmbed = new EmbedBuilder()
-      .setColor(0x4b0082)
-      .setTitle(`${emoji} Tarot Reading for ${user.displayName}`)
+      .setColor(this.getThemeColor(readingType))
+      .setTitle(
+        `${emoji} ${this.getReadingTitle(readingType)} for ${user.displayName}`
+      )
       .setDescription(this.getReadingDescription(readingType))
       .setThumbnail(user.displayAvatarURL())
       .setTimestamp()
-      .setFooter({ text: "For entertainment purposes only" });
+      .setFooter({
+        text: isPrivate
+          ? "🔒 Private Reading • For entertainment purposes only"
+          : "For entertainment purposes only",
+      });
 
-    // Add astrological influences for daily and single card readings
+    // Add astrological influences with enhanced formatting
     if (readingType === "daily" || readingType === "single") {
       const astroInfo = astrology.getAstrologicalInfluence();
       const astroFormatted = astrology.formatAstrologyInfo(astroInfo);
@@ -289,23 +473,81 @@ module.exports = {
       }
     }
 
-    embeds.push(mainEmbed);
+    // Add reading overview for multi-card spreads
+    if (cards.length > 1) {
+      const cardList = cards
+        .slice(0, 5)
+        .map((card, index) => {
+          const position = card.position || `Position ${index + 1}`;
+          const orientation = card.isReversed ? " 🔄" : " ⬆️";
+          return `**${position}**: ${card.name}${orientation}`;
+        })
+        .join("\n");
 
-    // Add card embeds (limit to avoid Discord's 10 embed limit)
-    const maxCards = readingType === "celtic-cross" ? 6 : cards.length; // Show first 6 cards for Celtic Cross
-
-    for (let i = 0; i < Math.min(maxCards, cards.length); i++) {
-      const cardEmbed = cardUtils.formatCard(cards[i], true);
-      embeds.push(new EmbedBuilder(cardEmbed));
+      if (cards.length > 5) {
+        mainEmbed.addFields({
+          name: "🎴 Cards in This Reading",
+          value: cardList + `\n*... and ${cards.length - 5} more cards*`,
+          inline: false,
+        });
+      } else {
+        mainEmbed.addFields({
+          name: "🎴 Cards in This Reading",
+          value: cardList,
+          inline: false,
+        });
+      }
     }
 
-    // If Celtic Cross, add a summary embed for remaining cards
+    // Add AI status indicator
+    if (aiEnhanced) {
+      mainEmbed.addFields({
+        name: "🤖 AI Enhancement",
+        value: aiInterpretation ? "✅ Included below" : "⚠️ Unavailable",
+        inline: true,
+      });
+    }
+
+    embeds.push(mainEmbed);
+
+    // Add card embeds with enhanced styling
+    const maxCards =
+      readingType === "celtic-cross" ? 6 : Math.min(cards.length, 8);
+
+    for (let i = 0; i < maxCards; i++) {
+      const cardEmbed = cardUtils.formatCard(cards[i], true);
+      const enhancedEmbed = new EmbedBuilder(cardEmbed).setColor(
+        cards[i].isReversed ? 0x8b0000 : this.getThemeColor(readingType)
+      );
+
+      // Add enhanced formatting for mobile
+      if (cards[i].position) {
+        enhancedEmbed.setTitle(`🎯 ${cards[i].position}: ${cards[i].name}`);
+      }
+
+      embeds.push(enhancedEmbed);
+    }
+
+    // Add AI interpretation embed if available
+    if (aiInterpretation && aiInterpretation.content) {
+      const aiEmbed = new EmbedBuilder()
+        .setColor(0x00d4aa)
+        .setTitle("🤖 AI-Enhanced Interpretation")
+        .setDescription(aiInterpretation.content)
+        .setFooter({
+          text: "✨ Enhanced with AI insights • For entertainment purposes only",
+        });
+
+      embeds.push(aiEmbed);
+    }
+
+    // Add summary embed for large spreads
     if (readingType === "celtic-cross" && cards.length > 6) {
       const remainingCards = cards.slice(6);
       const summaryEmbed = new EmbedBuilder()
         .setColor(0x4b0082)
-        .setTitle("✨ Remaining Cards")
-        .setDescription("The final cards of your Celtic Cross spread:");
+        .setTitle("✨ Final Cards Summary")
+        .setDescription("The remaining cards of your Celtic Cross spread:");
 
       remainingCards.forEach((card) => {
         const orientation = card.isReversed ? " (Reversed)" : "";
@@ -322,6 +564,107 @@ module.exports = {
     }
 
     return embeds;
+  },
+
+  // Build user context for AI interpretation
+  async buildUserContext(userId, db) {
+    try {
+      const recentReadings = await db.getRecentReadings(userId, 5);
+      const stats = await db.getUserCardStats(userId);
+      const hour = new Date().getHours();
+
+      return {
+        recentReadings: recentReadings.map((r) => r.reading_type),
+        readingHistory: {
+          total: stats.totalReadings,
+          favoriteType: this.getMostFrequentReadingType(recentReadings),
+        },
+        timeOfDay: hour,
+        // Add more context as needed
+      };
+    } catch (error) {
+      logger.error("Error building user context:", error);
+      return {};
+    }
+  },
+
+  // Get most frequent reading type
+  getMostFrequentReadingType(readings) {
+    const counts = {};
+    readings.forEach((reading) => {
+      counts[reading.reading_type] = (counts[reading.reading_type] || 0) + 1;
+    });
+
+    return Object.keys(counts).reduce(
+      (a, b) => (counts[a] > counts[b] ? a : b),
+      "single"
+    );
+  },
+
+  // Create action buttons for community features
+  createActionButtons(readingType, isPrivate) {
+    if (isPrivate) return null;
+
+    const actionRow = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`share_reading_${Date.now()}`)
+        .setLabel("Share Reading")
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji("📤"),
+      new ButtonBuilder()
+        .setCustomId(`save_reading_${Date.now()}`)
+        .setLabel("Save to Journal")
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("📖"),
+      new ButtonBuilder()
+        .setCustomId(`get_reflection_${Date.now()}`)
+        .setLabel("Reflection Questions")
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("🤔")
+    );
+
+    // Add AI insight button if available
+    if (aiEngine.isAvailable()) {
+      actionRow.addComponents(
+        new ButtonBuilder()
+          .setCustomId(`ai_insight_${Date.now()}`)
+          .setLabel("AI Insight")
+          .setStyle(ButtonStyle.Success)
+          .setEmoji("🤖")
+      );
+    }
+
+    return actionRow;
+  },
+
+  // Get theme color based on reading type
+  getThemeColor(readingType) {
+    const colors = {
+      single: 0x4b0082, // Indigo
+      "three-card": 0x6a0dad, // Purple
+      "celtic-cross": 0x8a2be2, // BlueViolet
+      horseshoe: 0x9370db, // MediumPurple
+      relationship: 0xff69b4, // HotPink
+      "yes-no": 0x32cd32, // LimeGreen
+      daily: 0xffd700, // Gold
+      career: 0x4169e1, // RoyalBlue
+    };
+    return colors[readingType] || 0x4b0082;
+  },
+
+  // Get enhanced reading title
+  getReadingTitle(readingType) {
+    const titles = {
+      single: "Single Card Reading",
+      "three-card": "Three-Card Spread",
+      "celtic-cross": "Celtic Cross Reading",
+      horseshoe: "Horseshoe Spread",
+      relationship: "Relationship Reading",
+      "yes-no": "Yes/No Oracle",
+      daily: "Daily Guidance",
+      career: "Career Guidance",
+    };
+    return titles[readingType] || "Tarot Reading";
   },
 
   getReadingDescription(readingType) {

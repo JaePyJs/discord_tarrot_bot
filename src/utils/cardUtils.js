@@ -342,6 +342,45 @@ class CardUtils {
 
     return null;
   }
+
+  // Get detailed card description for button handlers
+  getCardDescription(cardName) {
+    const card = this.allCards.find(
+      (c) => c.name.toLowerCase() === cardName.toLowerCase()
+    );
+
+    if (!card) {
+      return null;
+    }
+
+    return {
+      name: card.name,
+      description: card.upright.meaning,
+      keywords: card.upright.keywords,
+      upright: card.upright.meaning,
+      reversed: card.reversed.meaning,
+      advice: this.getCardAdvice(card),
+      arcana: card.arcana,
+      suit: card.suit,
+    };
+  }
+
+  // Get card-specific advice
+  getCardAdvice(card) {
+    // Generate advice based on card type
+    if (card.arcana === "major") {
+      return `This Major Arcana card represents a significant spiritual lesson. Reflect on how ${card.name} relates to your current life journey.`;
+    } else {
+      const suitAdvice = {
+        cups: "Pay attention to your emotional responses and relationships.",
+        wands: "Focus on taking action and pursuing your passions.",
+        swords: "Use clear thinking and honest communication.",
+        pentacles: "Consider practical matters and material concerns.",
+      };
+
+      return suitAdvice[card.suit] || "Consider how this card applies to your daily life.";
+    }
+  }
 }
 
 module.exports = new CardUtils();

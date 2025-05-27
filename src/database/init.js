@@ -147,9 +147,7 @@ async function initializeSQLiteDatabase() {
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
-                `);
-
-        // User favorites table
+                `);        // User favorites table
         db.run(`
                     CREATE TABLE IF NOT EXISTS user_favorites (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -160,7 +158,46 @@ async function initializeSQLiteDatabase() {
                     )
                 `);
 
-        // Create indexes for better performance
+        // Gamification tables
+        // User streaks table
+        db.run(`
+                    CREATE TABLE IF NOT EXISTS user_streaks (
+                        user_id TEXT PRIMARY KEY,
+                        current_streak INTEGER DEFAULT 0,
+                        longest_streak INTEGER DEFAULT 0,
+                        last_reading_date DATE,
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                `);
+
+        // User achievements table
+        db.run(`
+                    CREATE TABLE IF NOT EXISTS user_achievements (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        user_id TEXT NOT NULL,
+                        achievement_id TEXT NOT NULL,
+                        unlocked_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        UNIQUE(user_id, achievement_id)
+                    )
+                `);
+
+        // Daily quests table
+        db.run(`
+                    CREATE TABLE IF NOT EXISTS daily_quests (
+                        user_id TEXT PRIMARY KEY,
+                        quest_id TEXT NOT NULL,
+                        quest_name TEXT NOT NULL,
+                        quest_description TEXT NOT NULL,
+                        quest_reward TEXT NOT NULL,
+                        progress INTEGER DEFAULT 0,
+                        target INTEGER NOT NULL,
+                        completed BOOLEAN DEFAULT 0,
+                        quest_date DATE DEFAULT (date('now')),
+                        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                        updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                    )
+                `);        // Create indexes for better performance
         db.run(
           `CREATE INDEX IF NOT EXISTS idx_users_last_reading ON users(last_reading)`
         );
@@ -193,6 +230,25 @@ async function initializeSQLiteDatabase() {
         );
         db.run(
           `CREATE INDEX IF NOT EXISTS idx_user_favorites_card ON user_favorites(card_name)`
+        );
+        // Gamification indexes
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_user_streaks_user ON user_streaks(user_id)`
+        );
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_user_streaks_date ON user_streaks(last_reading_date)`
+        );
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)`
+        );
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_user_achievements_achievement ON user_achievements(achievement_id)`
+        );
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_daily_quests_user ON daily_quests(user_id)`
+        );
+        db.run(
+          `CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON daily_quests(quest_date)`
         );
       });
 

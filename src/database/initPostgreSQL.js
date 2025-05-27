@@ -124,9 +124,7 @@ async function initializePostgreSQLSchema() {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )
-        `);
-
-    // Create user favorites table
+        `);    // Create user favorites table
     await db.query(`
             CREATE TABLE IF NOT EXISTS user_favorites (
                 id SERIAL PRIMARY KEY,
@@ -134,6 +132,47 @@ async function initializePostgreSQLSchema() {
                 card_name VARCHAR(100) NOT NULL,
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 UNIQUE(user_id, card_name)
+            )
+        `);
+
+    // Gamification tables
+    // Create user streaks table
+    await db.query(`
+            CREATE TABLE IF NOT EXISTS user_streaks (
+                user_id VARCHAR(20) PRIMARY KEY,
+                current_streak INTEGER DEFAULT 0,
+                longest_streak INTEGER DEFAULT 0,
+                last_reading_date DATE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
+
+    // Create user achievements table
+    await db.query(`
+            CREATE TABLE IF NOT EXISTS user_achievements (
+                id SERIAL PRIMARY KEY,
+                user_id VARCHAR(20) NOT NULL,
+                achievement_id VARCHAR(50) NOT NULL,
+                unlocked_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(user_id, achievement_id)
+            )
+        `);
+
+    // Create daily quests table
+    await db.query(`
+            CREATE TABLE IF NOT EXISTS daily_quests (
+                user_id VARCHAR(20) PRIMARY KEY,
+                quest_id VARCHAR(50) NOT NULL,
+                quest_name VARCHAR(200) NOT NULL,
+                quest_description TEXT NOT NULL,
+                quest_reward VARCHAR(200) NOT NULL,
+                progress INTEGER DEFAULT 0,
+                target INTEGER NOT NULL,
+                completed BOOLEAN DEFAULT FALSE,
+                quest_date DATE DEFAULT CURRENT_DATE,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )
         `);
 
@@ -185,8 +224,7 @@ async function initializePostgreSQLSchema() {
     );
     await db.query(
       "CREATE INDEX IF NOT EXISTS idx_custom_spreads_name ON custom_spreads(name)"
-    );
-    await db.query(
+    );    await db.query(
       "CREATE INDEX IF NOT EXISTS idx_user_preferences_user ON user_preferences(user_id)"
     );
     await db.query(
@@ -194,6 +232,25 @@ async function initializePostgreSQLSchema() {
     );
     await db.query(
       "CREATE INDEX IF NOT EXISTS idx_user_favorites_card ON user_favorites(card_name)"
+    );
+    // Gamification indexes
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS idx_user_streaks_user ON user_streaks(user_id)"
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS idx_user_streaks_date ON user_streaks(last_reading_date)"
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)"
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS idx_user_achievements_achievement ON user_achievements(achievement_id)"
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS idx_daily_quests_user ON daily_quests(user_id)"
+    );
+    await db.query(
+      "CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON daily_quests(quest_date)"
     );
 
     // Create triggers for updated_at timestamps
@@ -229,12 +286,35 @@ async function initializePostgreSQLSchema() {
                 BEFORE UPDATE ON server_settings
                 FOR EACH ROW
                 EXECUTE FUNCTION update_updated_at_column()
-        `);
-
-    await db.query(`
+        `);    await db.query(`
             DROP TRIGGER IF EXISTS update_reminders_updated_at ON reminders;
             CREATE TRIGGER update_reminders_updated_at
                 BEFORE UPDATE ON reminders
+                FOR EACH ROW
+                EXECUTE FUNCTION update_updated_at_column()
+        `);
+
+    await db.query(`
+            DROP TRIGGER IF EXISTS update_custom_spreads_updated_at ON custom_spreads;
+            CREATE TRIGGER update_custom_spreads_updated_at
+                BEFORE UPDATE ON custom_spreads
+                FOR EACH ROW
+                EXECUTE FUNCTION update_updated_at_column()
+        `);
+
+    // Gamification triggers
+    await db.query(`
+            DROP TRIGGER IF EXISTS update_user_streaks_updated_at ON user_streaks;
+            CREATE TRIGGER update_user_streaks_updated_at
+                BEFORE UPDATE ON user_streaks
+                FOR EACH ROW
+                EXECUTE FUNCTION update_updated_at_column()
+        `);
+
+    await db.query(`
+            DROP TRIGGER IF EXISTS update_daily_quests_updated_at ON daily_quests;
+            CREATE TRIGGER update_daily_quests_updated_at
+                BEFORE UPDATE ON daily_quests
                 FOR EACH ROW
                 EXECUTE FUNCTION update_updated_at_column()
         `);

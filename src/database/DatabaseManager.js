@@ -347,6 +347,202 @@ class DatabaseManager {
 
     return await this.query(sql, [note, readingId]);
   }
+
+  // Gamification methods
+
+  // User streak methods
+  async getUserStreak(userId) {
+    const sql =
+      this.dbType === "postgresql"
+        ? "SELECT current_streak FROM user_streaks WHERE user_id = $1"
+        : "SELECT current_streak FROM user_streaks WHERE user_id = ?";
+
+    const result = await this.query(sql, [userId]);
+    const row = this.dbType === "postgresql" ? result.rows[0] : result.rows[0];
+    return row ? row.current_streak : 0;
+  }
+
+  async updateUserStreak(userId, streak) {
+    const timestamp = this.getCurrentTimestamp();
+    const date = this.getCurrentDate();
+
+    const sql =
+      this.dbType === "postgresql"
+        ? `INSERT INTO user_streaks (user_id, current_streak, longest_streak, last_reading_date, created_at, updated_at)
+           VALUES ($1, $2, $2, $3, $4, $4)
+           ON CONFLICT (user_id)
+           DO UPDATE SET 
+             current_streak = $2,
+             longest_streak = GREATEST(user_streaks.longest_streak, $2),
+             last_reading_date = $3,
+             updated_at = $4`
+        : `INSERT OR REPLACE INTO user_streaks (user_id, current_streak, longest_streak, last_reading_date, created_at, updated_at)
+           VALUES (?, ?, MAX(COALESCE((SELECT longest_streak FROM user_streaks WHERE user_id = ?), 0), ?), ?, ?, ?)`;
+
+    const params =
+      this.dbType === "postgresql"
+        ? [userId, streak, date, timestamp]
+        : [userId, streak, userId, streak, date, timestamp, timestamp];
+
+    return await this.query(sql, params);
+  }
+
+  async getLastReadingDate(userId) {
+    const sql =
+      this.dbType === "postgresql"
+        ? "SELECT MAX(created_at) as last_reading FROM readings WHERE user_id = $1"
+        : "SELECT MAX(created_at) as last_reading FROM readings WHERE user_id = ?";
+
+    const result = await this.query(sql, [userId]);
+    const row = this.dbType === "postgresql" ? result.rows[0] : result.rows[0];
+    return row ? row.last_reading : null;
+  }
+
+  // User achievements methods
+  async getUserAchievements(userId) {
+    const sql =
+      this.dbType === "postgresql"
+        ? "SELECT achievement_id FROM user_achievements WHERE user_id = $1"
+        : "SELECT achievement_id FROM user_achievements WHERE user_id = ?";
+
+    const result = await this.query(sql, [userId]);
+    const rows = this.dbType === "postgresql" ? result.rows : result.rows;
+    return rows.map((row) => row.achievement_id);
+  }
+
+  async addUserAchievement(userId, achievementId) {
+    const timestamp = this.getCurrentTimestamp();
+    const sql =
+      this.dbType === "postgresql"
+        ? "INSERT INTO user_achievements (user_id, achievement_id, unlocked_at) VALUES ($1, $2, $3) ON CONFLICT (user_id, achievement_id) DO NOTHING"
+        : "INSERT OR IGNORE INTO user_achievements (user_id, achievement_id, unlocked_at) VALUES (?, ?, ?)";
+
+    return await this.query(sql, [userId, achievementId, timestamp]);
+  }
+
+  // Daily quest methods
+  async getUserDailyQuest(userId) {
+    const today = this.getCurrentDate();
+    const sql =
+      this.dbType === "postgresql"
+        ? "SELECT * FROM daily_quests WHERE user_id = $1 AND quest_date = $2"
+        : "SELECT * FROM daily_quests WHERE user_id = ? AND quest_date = ?";
+
+    const result = await this.query(sql, [userId, today]);
+    const row = this.dbType === "postgresql" ? result.rows[0] : result.rows[0];
+
+    if (row) {
+      return {
+        id: row.quest_id,
+        name: row.quest_name,
+        description: row.quest_description,
+        reward: row.quest_reward,
+        progress: row.progress,
+        target: row.target,
+        completed: row.completed,
+      };
+    }
+    return null;
+  }
+
+  async setUserDailyQuest(userId, quest) {
+    const timestamp = this.getCurrentTimestamp();
+    const today = this.getCurrentDate();
+
+    const sql =
+      this.dbType === "postgresql"
+        ? `INSERT INTO daily_quests (user_id, quest_id, quest_name, quest_description, quest_reward, progress, target, completed, quest_date, created_at, updated_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)
+           ON CONFLICT (user_id) 
+           DO UPDATE SET 
+             quest_id = $2, quest_name = $3, quest_description = $4, quest_reward = $5,
+             progress = $6, target = $7, completed = $8, quest_date = $9, updated_at = $10`
+        : `INSERT OR REPLACE INTO daily_quests (user_id, quest_id, quest_name, quest_description, quest_reward, progress, target, completed, quest_date, created_at, updated_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+
+    const params = [
+      userId,
+      quest.id,
+      quest.name,
+      quest.description,
+      quest.reward,
+      quest.progress,
+      quest.target,
+      quest.completed ? 1 : 0,
+      today,
+      timestamp,
+    ];
+
+    if (this.dbType === "sqlite") {
+      params.push(timestamp);
+    }
+
+    return await this.query(sql, params);
+  }
+
+  async updateUserDailyQuest(userId, quest) {
+    const timestamp = this.getCurrentTimestamp();
+    const sql =
+      this.dbType === "postgresql"
+        ? "UPDATE daily_quests SET progress = $1, completed = $2, updated_at = $3 WHERE user_id = $4"
+        : "UPDATE daily_quests SET progress = ?, completed = ?, updated_at = ? WHERE user_id = ?";
+
+    return await this.query(sql, [
+      quest.progress,
+      quest.completed ? 1 : 0,
+      timestamp,
+      userId,
+    ]);
+  }
+
+  async completeUserDailyQuest(userId) {
+    const timestamp = this.getCurrentTimestamp();
+    const sql =
+      this.dbType === "postgresql"
+        ? "UPDATE daily_quests SET completed = TRUE, updated_at = $1 WHERE user_id = $2"
+        : "UPDATE daily_quests SET completed = 1, updated_at = ? WHERE user_id = ?";
+
+    return await this.query(sql, [timestamp, userId]);
+  }
+
+  // Statistics methods for gamification
+  async getUserCardStats(userId) {
+    const sql =
+      this.dbType === "postgresql"
+        ? `SELECT 
+             COUNT(*) as total_readings,
+             COUNT(CASE WHEN reading_type = 'daily' THEN 1 END) as daily_readings,
+             COUNT(CASE WHEN reading_type = 'relationship' THEN 1 END) as relationship_readings,
+             COUNT(CASE WHEN reading_type = 'three-card' THEN 1 END) as three_card_readings,
+             COUNT(CASE WHEN reading_type = 'celtic-cross' THEN 1 END) as celtic_cross_readings
+           FROM readings WHERE user_id = $1`
+        : `SELECT 
+             COUNT(*) as total_readings,
+             COUNT(CASE WHEN reading_type = 'daily' THEN 1 END) as daily_readings,
+             COUNT(CASE WHEN reading_type = 'relationship' THEN 1 END) as relationship_readings,
+             COUNT(CASE WHEN reading_type = 'three-card' THEN 1 END) as three_card_readings,
+             COUNT(CASE WHEN reading_type = 'celtic-cross' THEN 1 END) as celtic_cross_readings
+           FROM readings WHERE user_id = ?`;
+
+    const result = await this.query(sql, [userId]);
+    const row = this.dbType === "postgresql" ? result.rows[0] : result.rows[0];
+
+    // Get current streak
+    const currentStreak = await this.getUserStreak(userId);
+
+    return {
+      totalReadings: parseInt(row.total_readings) || 0,
+      dailyReadings: parseInt(row.daily_readings) || 0,
+      relationshipReadings: parseInt(row.relationship_readings) || 0,
+      threeCardReadings: parseInt(row.three_card_readings) || 0,
+      celticCrossReadings: parseInt(row.celtic_cross_readings) || 0,
+      currentStreak: currentStreak,
+      // Placeholder values - would need more complex queries for accurate counts
+      uniqueCards: 0,
+      majorArcanaCount: 0,
+      seasonalReadings: 0,
+    };
+  }
 }
 
 module.exports = DatabaseManager;
