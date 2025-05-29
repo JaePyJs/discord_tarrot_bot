@@ -124,7 +124,7 @@ async function initializePostgreSQLSchema() {
                 created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
             )
-        `);    // Create user favorites table
+        `); // Create user favorites table
     await db.query(`
             CREATE TABLE IF NOT EXISTS user_favorites (
                 id SERIAL PRIMARY KEY,
@@ -224,7 +224,8 @@ async function initializePostgreSQLSchema() {
     );
     await db.query(
       "CREATE INDEX IF NOT EXISTS idx_custom_spreads_name ON custom_spreads(name)"
-    );    await db.query(
+    );
+    await db.query(
       "CREATE INDEX IF NOT EXISTS idx_user_preferences_user ON user_preferences(user_id)"
     );
     await db.query(
@@ -286,7 +287,8 @@ async function initializePostgreSQLSchema() {
                 BEFORE UPDATE ON server_settings
                 FOR EACH ROW
                 EXECUTE FUNCTION update_updated_at_column()
-        `);    await db.query(`
+        `);
+    await db.query(`
             DROP TRIGGER IF EXISTS update_reminders_updated_at ON reminders;
             CREATE TRIGGER update_reminders_updated_at
                 BEFORE UPDATE ON reminders

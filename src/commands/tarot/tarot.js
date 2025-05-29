@@ -175,13 +175,22 @@ module.exports = {
     // Check cooldown
     if (cardUtils.isOnCooldown(userId)) {
       const remainingTime = cardUtils.getCooldownTime(userId);
+      const maxCooldown = parseInt(process.env.COMMAND_COOLDOWN) || 30;
+      const progress = Math.max(0, Math.round(((maxCooldown - remainingTime) / maxCooldown) * 10));
+      const progressBar = "█".repeat(progress) + "░".repeat(10 - progress);
+      
       const embed = new EmbedBuilder()
         .setColor(0xff6b6b)
-        .setTitle("🕐 The cards need time to recharge...")
+        .setTitle("🕐 The cards are recharging their mystical energy...")
         .setDescription(
-          `Please wait ${remainingTime} seconds before requesting another reading.`
+          `**Time remaining:** ${remainingTime} seconds\n\n**Progress:** ${progressBar} ${Math.round(((maxCooldown - remainingTime) / maxCooldown) * 100)}%`
         )
-        .setFooter({ text: "Patience brings clarity to the mystical arts" });
+        .addFields({
+          name: "💡 While you wait",
+          value: "• Use `/card <name>` to learn about specific cards\n• Check `/deck collection` to see your progress\n• Browse `/spread list` for custom layouts",
+          inline: false,
+        })
+        .setFooter({ text: "Patience brings clarity to the mystical arts ✨" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -193,13 +202,34 @@ module.exports = {
       const maxReadings = parseInt(process.env.MAX_READINGS_PER_DAY) || 10;
 
       if (todayCount >= maxReadings) {
+        const nextReset = new Date();
+        nextReset.setHours(24, 0, 0, 0);
+        const hoursUntilReset = Math.ceil((nextReset - new Date()) / (1000 * 60 * 60));
+        
         const embed = new EmbedBuilder()
           .setColor(0xff6b6b)
-          .setTitle("🌙 The cosmic energy is depleted")
+          .setTitle("🌙 Daily cosmic energy limit reached")
           .setDescription(
-            `You've reached your daily limit of ${maxReadings} readings. The cards need time to restore their mystical energy.`
+            `You've completed all **${maxReadings} readings** for today. The cards need time to restore their mystical energy.`
           )
-          .setFooter({ text: "Return tomorrow for fresh insights" });
+          .addFields(
+            {
+              name: "⏰ Reset Time",
+              value: `**${hoursUntilReset} hours** until fresh readings are available`,
+              inline: true,
+            },
+            {
+              name: "📊 Today's Progress",
+              value: `**${todayCount}/${maxReadings}** readings completed`,
+              inline: true,
+            },
+            {
+              name: "🎯 What you can still do",
+              value: "• Learn about cards with `/card <name>`\n• Manage favorites with `/deck favorites`\n• Explore themes with `/deck theme`\n• Create custom spreads with `/spread create`",
+              inline: false,
+            }
+          )
+          .setFooter({ text: "Return tomorrow for fresh cosmic insights ✨" });
 
         return await interaction.reply({ embeds: [embed], ephemeral: true });
       }
@@ -208,8 +238,31 @@ module.exports = {
       const isPrivate = interaction.options.getBoolean("private") || false;
       const aiEnhanced = interaction.options.getBoolean("ai-enhanced") || false;
 
-      // Defer reply for longer operations
-      await interaction.deferReply({ ephemeral: isPrivate });
+      // Defer reply for longer operations with loading message
+      const isComplexReading = ["celtic-cross", "horseshoe", "relationship", "career"].includes(subcommand);
+      
+      if (isComplexReading) {
+        await interaction.deferReply({ ephemeral: isPrivate });
+        
+        // Send interim loading message for complex readings
+        const loadingEmbed = new EmbedBuilder()
+          .setColor(0x4b0082)
+          .setTitle("🔮 Consulting the cosmic forces...")
+          .setDescription(`Preparing your **${subcommand.replace('-', ' ')}** reading...`)
+          .addFields({
+            name: "✨ The spirits are working",
+            value: "• Shuffling the mystical deck\n• Aligning cosmic energies\n• Drawing your cards",
+            inline: false,
+          })
+          .setFooter({ text: "This may take a moment for complex spreads" });
+          
+        // For very complex readings, send a loading message first
+        if (subcommand === "celtic-cross") {
+          await interaction.editReply({ embeds: [loadingEmbed] });
+        }
+      } else {
+        await interaction.deferReply({ ephemeral: isPrivate });
+      }
 
       let cards = [];
       let readingType = "";
@@ -299,35 +352,34 @@ module.exports = {
 
       // Create navigation buttons for multi-card readings
       const components = [];
-      
+
       // Add navigation buttons for multi-card spreads
       if (cards.length > 1 && !isPrivate) {
         const readingId = `${interaction.user.id}_${Date.now()}`;
-        const navRow = new ActionRowBuilder()
-          .addComponents(
-            new ButtonBuilder()
-              .setCustomId(`prev_${readingId}_0`)
-              .setLabel('◀ Previous')
-              .setStyle(ButtonStyle.Secondary)
-              .setDisabled(true), // Start disabled
-            new ButtonBuilder()
-              .setCustomId(`overview_${readingId}_0`)
-              .setLabel('📋 Overview')
-              .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-              .setCustomId(`next_${readingId}_0`)
-              .setLabel('Next ▶')
-              .setStyle(ButtonStyle.Secondary)
-              .setDisabled(cards.length <= 1),
-            new ButtonBuilder()
-              .setCustomId(`favorite_${readingId}_0`)
-              .setLabel('⭐ Favorite')
-              .setStyle(ButtonStyle.Success),
-            new ButtonBuilder()
-              .setCustomId(`share_${readingId}_0`)
-              .setLabel('📤 Share')
-              .setStyle(ButtonStyle.Secondary)
-          );
+        const navRow = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`prev_${readingId}_0`)
+            .setLabel("◀ Previous")
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(true), // Start disabled
+          new ButtonBuilder()
+            .setCustomId(`overview_${readingId}_0`)
+            .setLabel("📋 Overview")
+            .setStyle(ButtonStyle.Primary),
+          new ButtonBuilder()
+            .setCustomId(`next_${readingId}_0`)
+            .setLabel("Next ▶")
+            .setStyle(ButtonStyle.Secondary)
+            .setDisabled(cards.length <= 1),
+          new ButtonBuilder()
+            .setCustomId(`favorite_${readingId}_0`)
+            .setLabel("⭐ Favorite")
+            .setStyle(ButtonStyle.Success),
+          new ButtonBuilder()
+            .setCustomId(`share_${readingId}_0`)
+            .setLabel("📤 Share")
+            .setStyle(ButtonStyle.Secondary)
+        );
         components.push(navRow);
       }
 
@@ -342,17 +394,39 @@ module.exports = {
         response.components = components;
       }
 
-      await interaction.editReply(response);
-    } catch (error) {
+      await interaction.editReply(response);    } catch (error) {
       console.error("Error in tarot command:", error);
+      logger.error(`Tarot command error for user ${userId}:`, error);
+      
+      // Determine error type for better user messaging
+      const isConnectionError = error.message?.includes('connection') || error.message?.includes('database');
+      const isTimeoutError = error.message?.includes('timeout');
+      
+      let errorTitle = "🚫 The spirits are temporarily disturbed";
+      let errorDescription = "Something mystical went wrong while consulting the cards.";
+      let helpText = "Please try again in a moment. If the issue persists, the cosmic energies may be unstable.";
+      
+      if (isConnectionError) {
+        errorTitle = "📡 Connection to the mystical realm lost";
+        errorDescription = "Unable to connect to the spiritual database.";
+        helpText = "This is usually temporary. Please try again in 30-60 seconds.";
+      } else if (isTimeoutError) {
+        errorTitle = "⏰ The cards are taking longer than usual";
+        errorDescription = "The spiritual consultation is taking longer than expected.";
+        helpText = "Try a simpler reading like `/tarot single` or wait a moment before trying again.";
+      }
 
       const errorEmbed = new EmbedBuilder()
         .setColor(0xff0000)
-        .setTitle("🚫 The spirits are disturbed")
-        .setDescription(
-          "Something went wrong while consulting the cards. Please try again later."
-        )
-        .setFooter({ text: "The mystical energies are unstable" });
+        .setTitle(errorTitle)
+        .setDescription(errorDescription)
+        .addFields({
+          name: "🔧 What you can try",
+          value: helpText + "\n\n**Alternative actions:**\n• Use `/card <name>` to learn about specific cards\n• Check `/deck collection` for your stats\n• Try `/tarot help` for guidance",
+          inline: false,
+        })
+        .setFooter({ text: "The mystical energies will stabilize soon ✨" })
+        .setTimestamp();
 
       if (interaction.deferred) {
         await interaction.editReply({ embeds: [errorEmbed] });
@@ -360,81 +434,71 @@ module.exports = {
         await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
       }
     } finally {
-      db.close();
+      if (db) {
+        db.close();
+      }
     }
   },
 
   async handleHelp(interaction) {
     const helpEmbed = new EmbedBuilder()
       .setColor(0x4b0082)
-      .setTitle("🔮 Tarot Reading Guide")
+      .setTitle("🔮 Tarot Reading Guide & Commands")
       .setDescription(
-        "Welcome to the mystical world of tarot! Here are the available reading types:"
+        "Welcome to the mystical world of tarot! Choose from various spreads to gain cosmic insight."
       )
       .addFields(
         {
-          name: "🔮 Single Card",
+          name: "🌟 Popular Readings",
           value:
-            "`/tarot single` - Draw one card for quick guidance on your current situation",
-          inline: false,
+            "🔮 `/tarot single` - Quick daily guidance (30 sec)\n" +
+            "🃏 `/tarot three-card` - Past/Present/Future (2 min)\n" +
+            "❓ `/tarot yes-no` - Direct answers (30 sec)",
+          inline: true,
         },
         {
-          name: "🃏 Three-Card Spread",
+          name: "📚 Advanced Spreads",
           value:
-            "`/tarot three-card` - Past, Present, Future reading for deeper insight",
-          inline: false,
+            "✨ `/tarot celtic-cross` - Deep insight (5-10 min)\n" +
+            "🐴 `/tarot horseshoe` - Life guidance (3-5 min)\n" +
+            "💕 `/tarot relationship` - Love matters (3-5 min)\n" +
+            "💼 `/tarot career` - Professional path (3-5 min)",
+          inline: true,
         },
         {
-          name: "✨ Celtic Cross",
+          name: "🎨 Personalization",
           value:
-            "`/tarot celtic-cross` - Comprehensive 10-card spread for complex situations",
+            "🎯 `/deck theme` - Change visual style\n" +
+            "⭐ `/deck favorites` - Save meaningful cards\n" +
+            "📊 `/deck collection` - Track your journey\n" +
+            "⚙️ `/deck preferences` - Customize experience",
           inline: false,
         },
         {
-          name: "🐴 Horseshoe Spread",
-          value: "`/tarot horseshoe` - 7-card spread for general life guidance",
-          inline: false,
-        },
-        {
-          name: "💕 Relationship Spread",
+          name: "🔍 Card Discovery",
           value:
-            "`/tarot relationship` - 6-card spread focused on love and relationships",
-          inline: false,
+            "🃏 `/card <name>` - Learn about any card\n" +
+            "🎨 `/spread create` - Design custom layouts\n" +
+            "📋 `/spread list` - Browse available spreads",
+          inline: true,
         },
         {
-          name: "❓ Yes/No Reading",
-          value: "`/tarot yes-no` - Simple yes or no answer to your question",
-          inline: false,
-        },
-        {
-          name: "🌅 Daily Card",
-          value:
-            "`/tarot daily` - Single card for daily guidance and inspiration",
-          inline: false,
-        },
-        {
-          name: "💼 Career Spread",
-          value:
-            "`/tarot career` - 5-card spread for career and professional guidance",
-          inline: false,
-        },
-        {
-          name: "📚 About Tarot",
-          value:
-            "Tarot cards are used for entertainment and self-reflection. Each card has upright and reversed meanings that can offer different perspectives on life situations.",
-          inline: false,
-        },
-        {
-          name: "⏰ Usage Limits",
-          value: `• ${
+          name: "⏰ Usage Information",
+          value: `• **Cooldown:** ${
             process.env.COMMAND_COOLDOWN || 30
-          } second cooldown between readings\n• ${
+          } seconds between readings\n• **Daily Limit:** ${
             process.env.MAX_READINGS_PER_DAY || 10
-          } readings per day maximum`,
+          } readings per day\n• **AI Enhancement:** Available with \`ai-enhanced:true\``,
+          inline: true,
+        },
+        {
+          name: "💡 Pro Tips",
+          value:
+            "• Use `private:true` for personal readings\n• Try different spreads for various situations\n• Save meaningful cards to favorites\n• Create custom spreads for unique questions",
           inline: false,
         }
       )
-      .setFooter({ text: "Remember: Tarot is for entertainment purposes only" })
+      .setFooter({ text: "✨ Remember: Tarot is for entertainment and self-reflection only" })
       .setTimestamp();
 
     await interaction.reply({ embeds: [helpEmbed] });

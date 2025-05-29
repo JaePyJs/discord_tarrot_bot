@@ -23,8 +23,21 @@ module.exports = {
                 const embed = new EmbedBuilder()
                     .setColor(0xFF6B6B)
                     .setTitle('🔍 Card Not Found')
-                    .setDescription(`I couldn't find a card named "${cardName}". Try using the autocomplete feature or check your spelling.`)
-                    .setFooter({ text: 'Use /card and start typing to see available cards' });
+                    .setDescription(`I couldn't find a card named "${cardName}".`)
+                    .addFields({
+                        name: "💡 Suggestions",
+                        value: "• Use the **autocomplete** feature while typing\n• Try partial names (e.g., 'Fool' instead of 'The Fool')\n• Check spelling carefully\n• Browse popular cards below",
+                        inline: false,
+                    }, {
+                        name: "🌟 Popular Cards to Try",
+                        value: "• The Fool\n• The Magician\n• Death\n• The Star\n• Ace of Cups\n• Queen of Wands",
+                        inline: true,
+                    }, {
+                        name: "🔮 Card Categories",
+                        value: "• **Major Arcana** (22 cards)\n• **Minor Arcana** (56 cards)\n• **Court Cards** (16 cards)",
+                        inline: true,
+                    })
+                    .setFooter({ text: 'Use /card and start typing to see all available cards ✨' });
 
                 return await interaction.reply({ embeds: [embed], ephemeral: true });
             }
@@ -78,11 +91,22 @@ module.exports = {
         } catch (error) {
             console.error('Error in card command:', error);
             
+            const isNetworkError = error.message?.includes('network') || error.message?.includes('timeout');
+            
             const errorEmbed = new EmbedBuilder()
                 .setColor(0xFF0000)
-                .setTitle('🚫 Card Lookup Failed')
-                .setDescription('Something went wrong while looking up the card. Please try again.')
-                .setFooter({ text: 'The mystical library is temporarily unavailable' });
+                .setTitle(isNetworkError ? '📡 Connection to mystical library lost' : '🚫 Card Lookup Failed')
+                .setDescription(isNetworkError ? 
+                    'Unable to access the spiritual card database at this moment.' :
+                    'Something went wrong while searching for the card.')
+                .addFields({
+                    name: "🔧 What you can try",
+                    value: isNetworkError ?
+                        "• Wait 30-60 seconds and try again\n• Check your internet connection\n• Try a different card name" :
+                        "• Check the card name spelling\n• Use the autocomplete feature\n• Try again in a moment",
+                    inline: false,
+                })
+                .setFooter({ text: 'The mystical library will be available again soon ✨' });
 
             await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
         }

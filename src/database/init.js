@@ -147,7 +147,7 @@ async function initializeSQLiteDatabase() {
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
-                `);        // User favorites table
+                `); // User favorites table
         db.run(`
                     CREATE TABLE IF NOT EXISTS user_favorites (
                         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -197,7 +197,7 @@ async function initializeSQLiteDatabase() {
                         created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                         updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
                     )
-                `);        // Create indexes for better performance
+                `); // Create indexes for better performance
         db.run(
           `CREATE INDEX IF NOT EXISTS idx_users_last_reading ON users(last_reading)`
         );

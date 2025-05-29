@@ -378,7 +378,10 @@ class CardUtils {
         pentacles: "Consider practical matters and material concerns.",
       };
 
-      return suitAdvice[card.suit] || "Consider how this card applies to your daily life.";
+      return (
+        suitAdvice[card.suit] ||
+        "Consider how this card applies to your daily life."
+      );
     }
   }
 }

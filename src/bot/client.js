@@ -31,15 +31,15 @@ let reminderManager;
 // Load command files recursively
 function loadCommands(dir) {
   const files = readdirSync(dir, { withFileTypes: true });
-  
+
   for (const file of files) {
     const filePath = path.join(dir, file.name);
-    
+
     if (file.isDirectory()) {
       loadCommands(filePath);
-    } else if (file.name.endsWith('.js')) {
+    } else if (file.name.endsWith(".js")) {
       const command = require(filePath);
-      
+
       if ("data" in command && "execute" in command) {
         client.commands.set(command.data.name, command);
         logger.success(`Loaded command: ${command.data.name}`);
@@ -116,9 +116,10 @@ client.on("interactionCreate", async (interaction) => {
       });
     } catch (error) {
       logger.error("Error handling button interaction:", error);
-      
+
       const errorMessage = {
-        content: "🚫 There was an error processing your button interaction! The spirits seem disturbed...",
+        content:
+          "🚫 There was an error processing your button interaction! The spirits seem disturbed...",
         ephemeral: true,
       };
 

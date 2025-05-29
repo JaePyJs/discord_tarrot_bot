@@ -1,27 +1,27 @@
-const DatabaseManager = require('../src/database/DatabaseManager');
-const logger = require('../src/utils/logger');
+const DatabaseManager = require("../src/database/DatabaseManager");
+const logger = require("../src/utils/logger");
 
 async function migrateGamificationTables() {
   // Force SQLite for this migration if no database URL is provided
   if (!process.env.DATABASE_URL && !process.env.DATABASE_TYPE) {
-    process.env.DATABASE_TYPE = 'sqlite';
-    process.env.DB_PATH = './database/tarot.db';
+    process.env.DATABASE_TYPE = "sqlite";
+    process.env.DB_PATH = "./database/tarot.db";
   }
-  
+
   const db = new DatabaseManager();
-  
+
   try {
-    logger.info('Starting gamification tables migration...');
-    
-    if (db.dbType === 'postgresql') {
+    logger.info("Starting gamification tables migration...");
+
+    if (db.dbType === "postgresql") {
       await migratePostgreSQLGamification(db);
-    } else if (db.dbType === 'sqlite') {
+    } else if (db.dbType === "sqlite") {
       await migrateSQLiteGamification(db);
     }
-    
-    logger.success('Gamification tables migration completed successfully!');
+
+    logger.success("Gamification tables migration completed successfully!");
   } catch (error) {
-    logger.error('Migration failed:', error);
+    logger.error("Migration failed:", error);
     throw error;
   } finally {
     await db.close();
@@ -29,8 +29,8 @@ async function migrateGamificationTables() {
 }
 
 async function migratePostgreSQLGamification(db) {
-  logger.info('Migrating PostgreSQL gamification tables...');
-  
+  logger.info("Migrating PostgreSQL gamification tables...");
+
   // Create user streaks table
   await db.query(`
     CREATE TABLE IF NOT EXISTS user_streaks (
@@ -42,7 +42,7 @@ async function migratePostgreSQLGamification(db) {
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
+
   // Create user achievements table
   await db.query(`
     CREATE TABLE IF NOT EXISTS user_achievements (
@@ -53,7 +53,7 @@ async function migratePostgreSQLGamification(db) {
       UNIQUE(user_id, achievement_id)
     )
   `);
-  
+
   // Create daily quests table
   await db.query(`
     CREATE TABLE IF NOT EXISTS daily_quests (
@@ -70,15 +70,27 @@ async function migratePostgreSQLGamification(db) {
       updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
+
   // Create indexes
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_streaks_user ON user_streaks(user_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_streaks_date ON user_streaks(last_reading_date)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_achievements_achievement ON user_achievements(achievement_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_daily_quests_user ON daily_quests(user_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON daily_quests(quest_date)');
-  
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_streaks_user ON user_streaks(user_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_streaks_date ON user_streaks(last_reading_date)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_achievements_achievement ON user_achievements(achievement_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_daily_quests_user ON daily_quests(user_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON daily_quests(quest_date)"
+  );
+
   // Create update triggers
   await db.query(`
     CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -89,7 +101,7 @@ async function migratePostgreSQLGamification(db) {
     END;
     $$ language 'plpgsql'
   `);
-  
+
   await db.query(`
     DROP TRIGGER IF EXISTS update_user_streaks_updated_at ON user_streaks;
     CREATE TRIGGER update_user_streaks_updated_at
@@ -97,7 +109,7 @@ async function migratePostgreSQLGamification(db) {
       FOR EACH ROW
       EXECUTE FUNCTION update_updated_at_column()
   `);
-  
+
   await db.query(`
     DROP TRIGGER IF EXISTS update_daily_quests_updated_at ON daily_quests;
     CREATE TRIGGER update_daily_quests_updated_at
@@ -105,13 +117,13 @@ async function migratePostgreSQLGamification(db) {
       FOR EACH ROW
       EXECUTE FUNCTION update_updated_at_column()
   `);
-  
-  logger.info('PostgreSQL gamification tables created successfully');
+
+  logger.info("PostgreSQL gamification tables created successfully");
 }
 
 async function migrateSQLiteGamification(db) {
-  logger.info('Migrating SQLite gamification tables...');
-  
+  logger.info("Migrating SQLite gamification tables...");
+
   // Create user streaks table
   await db.query(`
     CREATE TABLE IF NOT EXISTS user_streaks (
@@ -123,7 +135,7 @@ async function migrateSQLiteGamification(db) {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
+
   // Create user achievements table
   await db.query(`
     CREATE TABLE IF NOT EXISTS user_achievements (
@@ -134,7 +146,7 @@ async function migrateSQLiteGamification(db) {
       UNIQUE(user_id, achievement_id)
     )
   `);
-  
+
   // Create daily quests table
   await db.query(`
     CREATE TABLE IF NOT EXISTS daily_quests (
@@ -151,27 +163,39 @@ async function migrateSQLiteGamification(db) {
       updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
     )
   `);
-  
+
   // Create indexes
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_streaks_user ON user_streaks(user_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_streaks_date ON user_streaks(last_reading_date)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_user_achievements_achievement ON user_achievements(achievement_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_daily_quests_user ON daily_quests(user_id)');
-  await db.query('CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON daily_quests(quest_date)');
-  
-  logger.info('SQLite gamification tables created successfully');
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_streaks_user ON user_streaks(user_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_streaks_date ON user_streaks(last_reading_date)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_achievements_user ON user_achievements(user_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_user_achievements_achievement ON user_achievements(achievement_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_daily_quests_user ON daily_quests(user_id)"
+  );
+  await db.query(
+    "CREATE INDEX IF NOT EXISTS idx_daily_quests_date ON daily_quests(quest_date)"
+  );
+
+  logger.info("SQLite gamification tables created successfully");
 }
 
 // Run migration if called directly
 if (require.main === module) {
   migrateGamificationTables()
     .then(() => {
-      console.log('✅ Gamification migration completed successfully!');
+      console.log("✅ Gamification migration completed successfully!");
       process.exit(0);
     })
     .catch((error) => {
-      console.error('❌ Migration failed:', error);
+      console.error("❌ Migration failed:", error);
       process.exit(1);
     });
 }

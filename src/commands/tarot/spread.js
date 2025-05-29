@@ -210,32 +210,44 @@ module.exports = {
       case 'all':
         spreads = await db.getAllSpreads();
         break;
-    }
-
-    if (spreads.length === 0) {
+    }    if (spreads.length === 0) {
       const embed = new EmbedBuilder()
         .setColor(0x4B0082)
         .setTitle('🎨 Custom Spreads')
         .setDescription(`No ${filter === 'mine' ? 'personal' : filter} spreads found.`)
-        .setFooter({ text: 'Use /spread create to make your first custom spread' });
+        .addFields({
+          name: "🌟 Get Started",
+          value: filter === 'mine' ? 
+            "Create your first custom spread with `/spread create`!\n\n**Popular ideas:**\n• Daily guidance (3 cards)\n• Decision making (5 cards)\n• Self-reflection (7 cards)" :
+            "No public spreads are available yet. Create and share one with `/spread create`!",
+          inline: false,
+        })
+        .setFooter({ text: 'Custom spreads let you explore unique question patterns ✨' });
 
       return await interaction.editReply({ embeds: [embed] });
-    }
-
-    const embed = new EmbedBuilder()
+    }    const embed = new EmbedBuilder()
       .setColor(0x4B0082)
-      .setTitle(`🎨 ${filter === 'mine' ? 'Your' : 'Available'} Custom Spreads`)
-      .setDescription(`Found ${spreads.length} spread(s)`)
-      .setFooter({ text: 'Use /spread use <name> to perform a reading' });
+      .setTitle(`🎨 ${filter === 'mine' ? 'Your Personal' : filter === 'public' ? 'Community' : 'All Available'} Spreads`)
+      .setDescription(`Found **${spreads.length}** spread(s) • Use \`/spread use <name>\` to try one`)
+      .setFooter({ text: `Showing ${Math.min(spreads.length, 10)} spreads • Create your own with /spread create ✨` });
 
     for (const spread of spreads.slice(0, 10)) { // Limit to 10 for display
-      const creator = spread.user_id === userId ? 'You' : `<@${spread.user_id}>`;
+      const creator = spread.user_id === userId ? '👤 You' : `👥 <@${spread.user_id}>`;
       const visibility = spread.is_public ? '🌍 Public' : '🔒 Private';
+      const timeAgo = this.getTimeAgo(spread.created_at);
       
       embed.addFields({
-        name: `🎴 ${spread.name} (${spread.card_count} cards)`,
-        value: `**Description:** ${spread.description}\n**Creator:** ${creator}\n**Visibility:** ${visibility}`,
+        name: `🎴 ${spread.name} • ${spread.card_count} cards`,
+        value: `**Description:** ${spread.description}\n**Creator:** ${creator} • **Visibility:** ${visibility}\n**Created:** ${timeAgo}`,
         inline: false
+      });
+    }
+
+    if (spreads.length > 10) {
+      embed.addFields({
+        name: "📋 More Available",
+        value: `...and ${spreads.length - 10} more spreads! Use filters to narrow your search.`,
+        inline: false,
       });
     }
 
@@ -492,5 +504,18 @@ module.exports = {
       logger.error('Autocomplete error:', error);
       await interaction.respond([]);
     }
-  }
+  },
+
+  // Helper method for time display
+  getTimeAgo(dateString) {
+    const now = new Date();
+    const date = new Date(dateString);
+    const diffInSeconds = Math.floor((now - date) / 1000);
+    
+    if (diffInSeconds < 60) return 'Just now';
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+    return date.toLocaleDateString();
+  },
 };
