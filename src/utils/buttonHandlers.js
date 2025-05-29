@@ -40,10 +40,11 @@ class ButtonHandlers {
     // Achievement related buttons
     if (customId.startsWith("achievement_")) {
       return await this.handleAchievementButtons(interaction);
-    }    // Other buttons can be handled here
+    } // Other buttons can be handled here
     logger.warn(`Unhandled button interaction: ${customId}`);
     await interaction.reply({
-      content: "🔮 This mystical button's power is still being channeled. Please try again later or use an alternative action.",
+      content:
+        "🔮 This mystical button's power is still being channeled. Please try again later or use an alternative action.",
       ephemeral: true,
     });
   }

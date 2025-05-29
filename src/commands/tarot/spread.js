@@ -1,99 +1,108 @@
-const { SlashCommandBuilder, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ModalBuilder, TextInputBuilder, TextInputStyle } = require('discord.js');
-const DatabaseManager = require('../../database/DatabaseManager');
-const cardUtils = require('../../utils/cardUtils');
-const logger = require('../../utils/logger');
-const moment = require('moment-timezone');
+const {
+  SlashCommandBuilder,
+  EmbedBuilder,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ModalBuilder,
+  TextInputBuilder,
+  TextInputStyle,
+} = require("discord.js");
+const DatabaseManager = require("../../database/DatabaseManager");
+const cardUtils = require("../../utils/cardUtils");
+const logger = require("../../utils/logger");
+const moment = require("moment-timezone");
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('spread')
-    .setDescription('Create and manage custom tarot spreads')
-    .addSubcommand(subcommand =>
+    .setName("spread")
+    .setDescription("Create and manage custom tarot spreads")
+    .addSubcommand((subcommand) =>
       subcommand
-        .setName('create')
-        .setDescription('Create a new custom spread')
-        .addStringOption(option =>
+        .setName("create")
+        .setDescription("Create a new custom spread")
+        .addStringOption((option) =>
           option
-            .setName('name')
-            .setDescription('Name for your custom spread')
+            .setName("name")
+            .setDescription("Name for your custom spread")
             .setRequired(true)
             .setMaxLength(50)
         )
-        .addIntegerOption(option =>
+        .addIntegerOption((option) =>
           option
-            .setName('cards')
-            .setDescription('Number of cards in the spread (1-15)')
+            .setName("cards")
+            .setDescription("Number of cards in the spread (1-15)")
             .setRequired(true)
             .setMinValue(1)
             .setMaxValue(15)
         )
-        .addStringOption(option =>
+        .addStringOption((option) =>
           option
-            .setName('description')
-            .setDescription('Brief description of the spread purpose')
+            .setName("description")
+            .setDescription("Brief description of the spread purpose")
             .setRequired(true)
             .setMaxLength(200)
         )
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand) =>
       subcommand
-        .setName('list')
-        .setDescription('View your custom spreads')
-        .addStringOption(option =>
+        .setName("list")
+        .setDescription("View your custom spreads")
+        .addStringOption((option) =>
           option
-            .setName('filter')
-            .setDescription('Filter spreads')
+            .setName("filter")
+            .setDescription("Filter spreads")
             .addChoices(
-              { name: 'My Spreads', value: 'mine' },
-              { name: 'Public Spreads', value: 'public' },
-              { name: 'All Spreads', value: 'all' }
+              { name: "My Spreads", value: "mine" },
+              { name: "Public Spreads", value: "public" },
+              { name: "All Spreads", value: "all" }
             )
         )
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand) =>
       subcommand
-        .setName('use')
-        .setDescription('Use a custom spread for a reading')
-        .addStringOption(option =>
+        .setName("use")
+        .setDescription("Use a custom spread for a reading")
+        .addStringOption((option) =>
           option
-            .setName('name')
-            .setDescription('Name of the spread to use')
+            .setName("name")
+            .setDescription("Name of the spread to use")
             .setRequired(true)
             .setAutocomplete(true)
         )
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand) =>
       subcommand
-        .setName('edit')
-        .setDescription('Edit one of your custom spreads')
-        .addStringOption(option =>
+        .setName("edit")
+        .setDescription("Edit one of your custom spreads")
+        .addStringOption((option) =>
           option
-            .setName('name')
-            .setDescription('Name of the spread to edit')
+            .setName("name")
+            .setDescription("Name of the spread to edit")
             .setRequired(true)
             .setAutocomplete(true)
         )
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand) =>
       subcommand
-        .setName('delete')
-        .setDescription('Delete one of your custom spreads')
-        .addStringOption(option =>
+        .setName("delete")
+        .setDescription("Delete one of your custom spreads")
+        .addStringOption((option) =>
           option
-            .setName('name')
-            .setDescription('Name of the spread to delete')
+            .setName("name")
+            .setDescription("Name of the spread to delete")
             .setRequired(true)
             .setAutocomplete(true)
         )
     )
-    .addSubcommand(subcommand =>
+    .addSubcommand((subcommand) =>
       subcommand
-        .setName('share')
-        .setDescription('Share your spread publicly')
-        .addStringOption(option =>
+        .setName("share")
+        .setDescription("Share your spread publicly")
+        .addStringOption((option) =>
           option
-            .setName('name')
-            .setDescription('Name of the spread to share')
+            .setName("name")
+            .setDescription("Name of the spread to share")
             .setRequired(true)
             .setAutocomplete(true)
         )
@@ -106,32 +115,34 @@ module.exports = {
 
     try {
       switch (subcommand) {
-        case 'create':
+        case "create":
           await this.handleCreate(interaction, db, userId);
           break;
-        case 'list':
+        case "list":
           await this.handleList(interaction, db, userId);
           break;
-        case 'use':
+        case "use":
           await this.handleUse(interaction, db, userId);
           break;
-        case 'edit':
+        case "edit":
           await this.handleEdit(interaction, db, userId);
           break;
-        case 'delete':
+        case "delete":
           await this.handleDelete(interaction, db, userId);
           break;
-        case 'share':
+        case "share":
           await this.handleShare(interaction, db, userId);
           break;
       }
     } catch (error) {
-      logger.error('Error in spread command:', error);
+      logger.error("Error in spread command:", error);
       const errorEmbed = new EmbedBuilder()
-        .setColor(0xFF0000)
-        .setTitle('🎨 Spread Error')
-        .setDescription('There was an error with the spread system. Please try again later.')
-        .setFooter({ text: 'The mystical patterns seem disrupted' });
+        .setColor(0xff0000)
+        .setTitle("🎨 Spread Error")
+        .setDescription(
+          "There was an error with the spread system. Please try again later."
+        )
+        .setFooter({ text: "The mystical patterns seem disrupted" });
 
       if (interaction.replied || interaction.deferred) {
         await interaction.followUp({ embeds: [errorEmbed], ephemeral: true });
@@ -142,18 +153,20 @@ module.exports = {
   },
 
   async handleCreate(interaction, db, userId) {
-    const name = interaction.options.getString('name');
-    const cardCount = interaction.options.getInteger('cards');
-    const description = interaction.options.getString('description');
+    const name = interaction.options.getString("name");
+    const cardCount = interaction.options.getInteger("cards");
+    const description = interaction.options.getString("description");
 
     // Check if spread name already exists for this user
     const existingSpread = await db.getUserSpread(userId, name);
     if (existingSpread) {
       const embed = new EmbedBuilder()
-        .setColor(0xFF6B6B)
-        .setTitle('🎨 Spread Already Exists')
-        .setDescription(`You already have a spread named "${name}". Please choose a different name or edit the existing one.`)
-        .setFooter({ text: 'Each spread name must be unique' });
+        .setColor(0xff6b6b)
+        .setTitle("🎨 Spread Already Exists")
+        .setDescription(
+          `You already have a spread named "${name}". Please choose a different name or edit the existing one.`
+        )
+        .setFooter({ text: "Each spread name must be unique" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -184,7 +197,7 @@ module.exports = {
       cardCount,
       description,
       userId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     // Store in memory temporarily (in production, use Redis or database)
@@ -196,57 +209,83 @@ module.exports = {
 
   async handleList(interaction, db, userId) {
     await interaction.deferReply();
-    
-    const filter = interaction.options.getString('filter') || 'mine';
+
+    const filter = interaction.options.getString("filter") || "mine";
     let spreads = [];
 
     switch (filter) {
-      case 'mine':
+      case "mine":
         spreads = await db.getUserSpreads(userId);
         break;
-      case 'public':
+      case "public":
         spreads = await db.getPublicSpreads();
         break;
-      case 'all':
+      case "all":
         spreads = await db.getAllSpreads();
         break;
-    }    if (spreads.length === 0) {
+    }
+    if (spreads.length === 0) {
       const embed = new EmbedBuilder()
-        .setColor(0x4B0082)
-        .setTitle('🎨 Custom Spreads')
-        .setDescription(`No ${filter === 'mine' ? 'personal' : filter} spreads found.`)
+        .setColor(0x4b0082)
+        .setTitle("🎨 Custom Spreads")
+        .setDescription(
+          `No ${filter === "mine" ? "personal" : filter} spreads found.`
+        )
         .addFields({
           name: "🌟 Get Started",
-          value: filter === 'mine' ? 
-            "Create your first custom spread with `/spread create`!\n\n**Popular ideas:**\n• Daily guidance (3 cards)\n• Decision making (5 cards)\n• Self-reflection (7 cards)" :
-            "No public spreads are available yet. Create and share one with `/spread create`!",
+          value:
+            filter === "mine"
+              ? "Create your first custom spread with `/spread create`!\n\n**Popular ideas:**\n• Daily guidance (3 cards)\n• Decision making (5 cards)\n• Self-reflection (7 cards)"
+              : "No public spreads are available yet. Create and share one with `/spread create`!",
           inline: false,
         })
-        .setFooter({ text: 'Custom spreads let you explore unique question patterns ✨' });
+        .setFooter({
+          text: "Custom spreads let you explore unique question patterns ✨",
+        });
 
       return await interaction.editReply({ embeds: [embed] });
-    }    const embed = new EmbedBuilder()
-      .setColor(0x4B0082)
-      .setTitle(`🎨 ${filter === 'mine' ? 'Your Personal' : filter === 'public' ? 'Community' : 'All Available'} Spreads`)
-      .setDescription(`Found **${spreads.length}** spread(s) • Use \`/spread use <name>\` to try one`)
-      .setFooter({ text: `Showing ${Math.min(spreads.length, 10)} spreads • Create your own with /spread create ✨` });
+    }
+    const embed = new EmbedBuilder()
+      .setColor(0x4b0082)
+      .setTitle(
+        `🎨 ${
+          filter === "mine"
+            ? "Your Personal"
+            : filter === "public"
+            ? "Community"
+            : "All Available"
+        } Spreads`
+      )
+      .setDescription(
+        `Found **${spreads.length}** spread(s) • Use \`/spread use <name>\` to try one`
+      )
+      .setFooter({
+        text: `Showing ${Math.min(
+          spreads.length,
+          10
+        )} spreads • Create your own with /spread create ✨`,
+      });
 
-    for (const spread of spreads.slice(0, 10)) { // Limit to 10 for display
-      const creator = spread.user_id === userId ? '👤 You' : `👥 <@${spread.user_id}>`;
-      const visibility = spread.is_public ? '🌍 Public' : '🔒 Private';
+    for (const spread of spreads.slice(0, 10)) {
+      // Limit to 10 for display
+      const creator =
+        spread.user_id === userId ? "👤 You" : `👥 <@${spread.user_id}>`;
+      const visibility = spread.is_public ? "🌍 Public" : "🔒 Private";
       const timeAgo = this.getTimeAgo(spread.created_at);
-      
+
       embed.addFields({
         name: `🎴 ${spread.name} • ${spread.card_count} cards`,
         value: `**Description:** ${spread.description}\n**Creator:** ${creator} • **Visibility:** ${visibility}\n**Created:** ${timeAgo}`,
-        inline: false
+        inline: false,
       });
     }
 
     if (spreads.length > 10) {
       embed.addFields({
         name: "📋 More Available",
-        value: `...and ${spreads.length - 10} more spreads! Use filters to narrow your search.`,
+        value: `...and ${
+          spreads.length - 10
+        } more spreads! Use filters to narrow your search.`,
         inline: false,
       });
     }
@@ -255,16 +294,16 @@ module.exports = {
   },
 
   async handleUse(interaction, db, userId) {
-    const spreadName = interaction.options.getString('name');
-    
+    const spreadName = interaction.options.getString("name");
+
     // Get the spread
     const spread = await db.getSpreadByName(spreadName, userId);
     if (!spread) {
       const embed = new EmbedBuilder()
-        .setColor(0xFF6B6B)
-        .setTitle('🎨 Spread Not Found')
+        .setColor(0xff6b6b)
+        .setTitle("🎨 Spread Not Found")
         .setDescription(`Could not find a spread named "${spreadName}".`)
-        .setFooter({ text: 'Use /spread list to see available spreads' });
+        .setFooter({ text: "Use /spread list to see available spreads" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -273,10 +312,12 @@ module.exports = {
     if (cardUtils.isOnCooldown(userId)) {
       const remainingTime = cardUtils.getCooldownTime(userId);
       const embed = new EmbedBuilder()
-        .setColor(0xFF6B6B)
-        .setTitle('🕐 The cards need time to recharge...')
-        .setDescription(`Please wait ${remainingTime} seconds before requesting another reading.`)
-        .setFooter({ text: 'Patience brings clarity to the mystical arts' });
+        .setColor(0xff6b6b)
+        .setTitle("🕐 The cards need time to recharge...")
+        .setDescription(
+          `Please wait ${remainingTime} seconds before requesting another reading.`
+        )
+        .setFooter({ text: "Patience brings clarity to the mystical arts" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -293,134 +334,152 @@ module.exports = {
     }
 
     // Create reading embeds
-    const embeds = await this.createCustomSpreadEmbeds(cards, spread, interaction.user);
+    const embeds = await this.createCustomSpreadEmbeds(
+      cards,
+      spread,
+      interaction.user
+    );
 
     // Save reading to database
     const db2 = new DatabaseManager();
-    await db2.saveReading(userId, interaction.guild?.id, `custom:${spread.name}`, cards);
+    await db2.saveReading(
+      userId,
+      interaction.guild?.id,
+      `custom:${spread.name}`,
+      cards
+    );
 
     // Set cooldown and update analytics
     cardUtils.setCooldown(userId);
-    
+
     await interaction.editReply({ embeds });
   },
 
   async handleEdit(interaction, db, userId) {
-    const spreadName = interaction.options.getString('name');
-    
+    const spreadName = interaction.options.getString("name");
+
     // Get the spread
     const spread = await db.getUserSpread(userId, spreadName);
     if (!spread) {
       const embed = new EmbedBuilder()
-        .setColor(0xFF6B6B)
-        .setTitle('🎨 Spread Not Found')
+        .setColor(0xff6b6b)
+        .setTitle("🎨 Spread Not Found")
         .setDescription(`Could not find your spread named "${spreadName}".`)
-        .setFooter({ text: 'Use /spread list mine to see your spreads' });
+        .setFooter({ text: "Use /spread list mine to see your spreads" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
     // Create edit buttons
-    const row = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId(`edit_description_${spread.id}`)
-          .setLabel('Edit Description')
-          .setStyle(ButtonStyle.Primary)
-          .setEmoji('📝'),
-        new ButtonBuilder()
-          .setCustomId(`edit_positions_${spread.id}`)
-          .setLabel('Edit Positions')
-          .setStyle(ButtonStyle.Secondary)
-          .setEmoji('🎯'),
-        new ButtonBuilder()
-          .setCustomId(`toggle_visibility_${spread.id}`)
-          .setLabel(spread.is_public ? 'Make Private' : 'Make Public')
-          .setStyle(spread.is_public ? ButtonStyle.Danger : ButtonStyle.Success)
-          .setEmoji(spread.is_public ? '🔒' : '🌍')
-      );
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`edit_description_${spread.id}`)
+        .setLabel("Edit Description")
+        .setStyle(ButtonStyle.Primary)
+        .setEmoji("📝"),
+      new ButtonBuilder()
+        .setCustomId(`edit_positions_${spread.id}`)
+        .setLabel("Edit Positions")
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("🎯"),
+      new ButtonBuilder()
+        .setCustomId(`toggle_visibility_${spread.id}`)
+        .setLabel(spread.is_public ? "Make Private" : "Make Public")
+        .setStyle(spread.is_public ? ButtonStyle.Danger : ButtonStyle.Success)
+        .setEmoji(spread.is_public ? "🔒" : "🌍")
+    );
 
     const embed = new EmbedBuilder()
-      .setColor(0x4B0082)
+      .setColor(0x4b0082)
       .setTitle(`🎨 Edit Spread: ${spread.name}`)
       .setDescription(spread.description)
       .addFields(
         {
-          name: '🎴 Card Count',
+          name: "🎴 Card Count",
           value: spread.card_count.toString(),
-          inline: true
+          inline: true,
         },
         {
-          name: '👁️ Visibility',
-          value: spread.is_public ? '🌍 Public' : '🔒 Private',
-          inline: true
+          name: "👁️ Visibility",
+          value: spread.is_public ? "🌍 Public" : "🔒 Private",
+          inline: true,
         },
         {
-          name: '🎯 Positions',
-          value: JSON.parse(spread.positions).join(', '),
-          inline: false
+          name: "🎯 Positions",
+          value: JSON.parse(spread.positions).join(", "),
+          inline: false,
         }
       )
-      .setFooter({ text: 'Choose what you want to edit' });
+      .setFooter({ text: "Choose what you want to edit" });
 
-    await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+    await interaction.reply({
+      embeds: [embed],
+      components: [row],
+      ephemeral: true,
+    });
   },
 
   async handleDelete(interaction, db, userId) {
-    const spreadName = interaction.options.getString('name');
-    
+    const spreadName = interaction.options.getString("name");
+
     // Get the spread
     const spread = await db.getUserSpread(userId, spreadName);
     if (!spread) {
       const embed = new EmbedBuilder()
-        .setColor(0xFF6B6B)
-        .setTitle('🎨 Spread Not Found')
+        .setColor(0xff6b6b)
+        .setTitle("🎨 Spread Not Found")
         .setDescription(`Could not find your spread named "${spreadName}".`)
-        .setFooter({ text: 'Use /spread list mine to see your spreads' });
+        .setFooter({ text: "Use /spread list mine to see your spreads" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
 
     // Create confirmation buttons
-    const row = new ActionRowBuilder()
-      .addComponents(
-        new ButtonBuilder()
-          .setCustomId(`confirm_delete_${spread.id}`)
-          .setLabel('Yes, Delete')
-          .setStyle(ButtonStyle.Danger)
-          .setEmoji('🗑️'),
-        new ButtonBuilder()
-          .setCustomId(`cancel_delete_${spread.id}`)
-          .setLabel('Cancel')
-          .setStyle(ButtonStyle.Secondary)
-          .setEmoji('❌')
-      );
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId(`confirm_delete_${spread.id}`)
+        .setLabel("Yes, Delete")
+        .setStyle(ButtonStyle.Danger)
+        .setEmoji("🗑️"),
+      new ButtonBuilder()
+        .setCustomId(`cancel_delete_${spread.id}`)
+        .setLabel("Cancel")
+        .setStyle(ButtonStyle.Secondary)
+        .setEmoji("❌")
+    );
 
     const embed = new EmbedBuilder()
-      .setColor(0xFF6B6B)
-      .setTitle('🗑️ Delete Spread')
-      .setDescription(`Are you sure you want to delete the spread "${spread.name}"?`)
+      .setColor(0xff6b6b)
+      .setTitle("🗑️ Delete Spread")
+      .setDescription(
+        `Are you sure you want to delete the spread "${spread.name}"?`
+      )
       .addFields({
-        name: '⚠️ Warning',
-        value: 'This action cannot be undone. All readings using this spread will remain, but the spread definition will be lost.',
-        inline: false
+        name: "⚠️ Warning",
+        value:
+          "This action cannot be undone. All readings using this spread will remain, but the spread definition will be lost.",
+        inline: false,
       })
-      .setFooter({ text: 'Choose carefully' });
+      .setFooter({ text: "Choose carefully" });
 
-    await interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
+    await interaction.reply({
+      embeds: [embed],
+      components: [row],
+      ephemeral: true,
+    });
   },
 
   async handleShare(interaction, db, userId) {
-    const spreadName = interaction.options.getString('name');
-    
+    const spreadName = interaction.options.getString("name");
+
     // Get the spread
     const spread = await db.getUserSpread(userId, spreadName);
     if (!spread) {
       const embed = new EmbedBuilder()
-        .setColor(0xFF6B6B)
-        .setTitle('🎨 Spread Not Found')
+        .setColor(0xff6b6b)
+        .setTitle("🎨 Spread Not Found")
         .setDescription(`Could not find your spread named "${spreadName}".`)
-        .setFooter({ text: 'Use /spread list mine to see your spreads' });
+        .setFooter({ text: "Use /spread list mine to see your spreads" });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -430,17 +489,21 @@ module.exports = {
     await db.updateSpreadVisibility(spread.id, newStatus);
 
     const embed = new EmbedBuilder()
-      .setColor(0x4B0082)
-      .setTitle('🌍 Spread Visibility Updated')
-      .setDescription(`Your spread "${spread.name}" is now ${newStatus ? 'public' : 'private'}.`)
+      .setColor(0x4b0082)
+      .setTitle("🌍 Spread Visibility Updated")
+      .setDescription(
+        `Your spread "${spread.name}" is now ${
+          newStatus ? "public" : "private"
+        }.`
+      )
       .addFields({
-        name: newStatus ? '🌍 Public Spread' : '🔒 Private Spread',
-        value: newStatus 
-          ? 'Other users can now discover and use your spread!'
-          : 'Your spread is now private and only you can use it.',
-        inline: false
+        name: newStatus ? "🌍 Public Spread" : "🔒 Private Spread",
+        value: newStatus
+          ? "Other users can now discover and use your spread!"
+          : "Your spread is now private and only you can use it.",
+        inline: false,
       })
-      .setFooter({ text: 'You can change this anytime' });
+      .setFooter({ text: "You can change this anytime" });
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   },
@@ -450,7 +513,7 @@ module.exports = {
 
     // Main spread embed
     const mainEmbed = new EmbedBuilder()
-      .setColor(0x4B0082)
+      .setColor(0x4b0082)
       .setTitle(`🎨 ${spread.name} Reading`)
       .setDescription(spread.description)
       .setAuthor({
@@ -459,7 +522,9 @@ module.exports = {
       })
       .setTimestamp()
       .setFooter({
-        text: `Custom spread by ${spread.creator_name || 'Unknown'} • For entertainment purposes only`,
+        text: `Custom spread by ${
+          spread.creator_name || "Unknown"
+        } • For entertainment purposes only`,
       });
 
     embeds.push(mainEmbed);
@@ -467,7 +532,7 @@ module.exports = {
     // Card embeds
     for (const card of cards) {
       const cardEmbed = cardUtils.formatCard(card, true);
-      cardEmbed.color = card.isReversed ? 0x8B0000 : 0x4B0082;
+      cardEmbed.color = card.isReversed ? 0x8b0000 : 0x4b0082;
       embeds.push(new EmbedBuilder(cardEmbed));
     }
 
@@ -482,8 +547,8 @@ module.exports = {
 
     try {
       let spreads = [];
-      
-      if (['edit', 'delete'].includes(subcommand)) {
+
+      if (["edit", "delete"].includes(subcommand)) {
         // Only show user's own spreads
         spreads = await db.getUserSpreads(userId);
       } else {
@@ -492,16 +557,16 @@ module.exports = {
       }
 
       const filtered = spreads
-        .filter(spread => spread.name.toLowerCase().includes(focusedValue))
+        .filter((spread) => spread.name.toLowerCase().includes(focusedValue))
         .slice(0, 25)
-        .map(spread => ({
+        .map((spread) => ({
           name: `${spread.name} (${spread.card_count} cards)`,
-          value: spread.name
+          value: spread.name,
         }));
 
       await interaction.respond(filtered);
     } catch (error) {
-      logger.error('Autocomplete error:', error);
+      logger.error("Autocomplete error:", error);
       await interaction.respond([]);
     }
   },
@@ -511,11 +576,14 @@ module.exports = {
     const now = new Date();
     const date = new Date(dateString);
     const diffInSeconds = Math.floor((now - date) / 1000);
-    
-    if (diffInSeconds < 60) return 'Just now';
-    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} minutes ago`;
-    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} hours ago`;
-    if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} days ago`;
+
+    if (diffInSeconds < 60) return "Just now";
+    if (diffInSeconds < 3600)
+      return `${Math.floor(diffInSeconds / 60)} minutes ago`;
+    if (diffInSeconds < 86400)
+      return `${Math.floor(diffInSeconds / 3600)} hours ago`;
+    if (diffInSeconds < 2592000)
+      return `${Math.floor(diffInSeconds / 86400)} days ago`;
     return date.toLocaleDateString();
   },
 };

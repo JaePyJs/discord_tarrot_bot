@@ -119,28 +119,41 @@ module.exports = {
 
     // Check if user has unlocked this theme
     const userPrefs = await db.getUserPreferences(userId);
-    const unlockedThemes = userPrefs?.unlocked_themes || ["classic"];    if (!unlockedThemes.includes(theme)) {
+    const unlockedThemes = userPrefs?.unlocked_themes || ["classic"];
+    if (!unlockedThemes.includes(theme)) {
       const requirement = this.getUnlockRequirement(theme);
       const embed = new EmbedBuilder()
         .setColor(0xff6b6b)
         .setTitle("🔒 Theme Locked")
         .setDescription(
-          `The **${this.getThemeName(theme)}** theme awaits your dedication to the mystical arts.`
+          `The **${this.getThemeName(
+            theme
+          )}** theme awaits your dedication to the mystical arts.`
         )
-        .addFields({
-          name: "🗝️ Unlock Requirement",
-          value: requirement,
-          inline: false,
-        }, {
-          name: "💡 How to Progress",
-          value: "• Complete more tarot readings\n• Explore different spread types\n• Build your card collection\n• Check your progress with `/deck collection`",
-          inline: false,
-        }, {
-          name: "🎨 Currently Available",
-          value: unlockedThemes.map(t => `✅ ${this.getThemeName(t)}`).join('\n') || "Classic theme only",
-          inline: true,
-        })
-        .setFooter({ text: "Your mystical journey unlocks beautiful new themes! ✨" });
+        .addFields(
+          {
+            name: "🗝️ Unlock Requirement",
+            value: requirement,
+            inline: false,
+          },
+          {
+            name: "💡 How to Progress",
+            value:
+              "• Complete more tarot readings\n• Explore different spread types\n• Build your card collection\n• Check your progress with `/deck collection`",
+            inline: false,
+          },
+          {
+            name: "🎨 Currently Available",
+            value:
+              unlockedThemes
+                .map((t) => `✅ ${this.getThemeName(t)}`)
+                .join("\n") || "Classic theme only",
+            inline: true,
+          }
+        )
+        .setFooter({
+          text: "Your mystical journey unlocks beautiful new themes! ✨",
+        });
 
       return await interaction.reply({ embeds: [embed], ephemeral: true });
     }
@@ -148,25 +161,36 @@ module.exports = {
     // Set the theme
     await db.setUserPreference(userId, "deck_theme", theme);
 
-    const themeData = this.getThemeData(theme);    const embed = new EmbedBuilder()
+    const themeData = this.getThemeData(theme);
+    const embed = new EmbedBuilder()
       .setColor(themeData.color)
       .setTitle(`🎨 Theme Successfully Changed`)
-      .setDescription(`Your mystical aesthetic has been set to **${themeData.name}**`)
-      .addFields({
-        name: "✨ Theme Features",
-        value: themeData.description,
-        inline: false,
-      }, {
-        name: "🔮 What's New",
-        value: "• All future readings will use this theme\n• Card embeds will reflect the new style\n• Enhanced visual experience awaits",
-        inline: true,
-      }, {
-        name: "🎯 Quick Actions",
-        value: "• Try `/tarot single` to see your new theme\n• Check `/deck collection` for your progress\n• Explore `/deck unlock` for more themes",
-        inline: true,
-      })
+      .setDescription(
+        `Your mystical aesthetic has been set to **${themeData.name}**`
+      )
+      .addFields(
+        {
+          name: "✨ Theme Features",
+          value: themeData.description,
+          inline: false,
+        },
+        {
+          name: "🔮 What's New",
+          value:
+            "• All future readings will use this theme\n• Card embeds will reflect the new style\n• Enhanced visual experience awaits",
+          inline: true,
+        },
+        {
+          name: "🎯 Quick Actions",
+          value:
+            "• Try `/tarot single` to see your new theme\n• Check `/deck collection` for your progress\n• Explore `/deck unlock` for more themes",
+          inline: true,
+        }
+      )
       .setThumbnail(themeData.preview)
-      .setFooter({ text: "Your readings will now have this beautiful new style ✨" });
+      .setFooter({
+        text: "Your readings will now have this beautiful new style ✨",
+      });
 
     await interaction.reply({ embeds: [embed], ephemeral: true });
   },
@@ -212,7 +236,18 @@ module.exports = {
 
     // Calculate additional stats
     const completionRate = Math.round((stats.uniqueCards / 78) * 100);
-    const averageReadingsPerDay = stats.totalReadings > 0 ? Math.round(stats.totalReadings / Math.max(1, Math.ceil((Date.now() - stats.firstReading) / (1000 * 60 * 60 * 24)))) : 0;
+    const averageReadingsPerDay =
+      stats.totalReadings > 0
+        ? Math.round(
+            stats.totalReadings /
+              Math.max(
+                1,
+                Math.ceil(
+                  (Date.now() - stats.firstReading) / (1000 * 60 * 60 * 24)
+                )
+              )
+          )
+        : 0;
 
     const embed = new EmbedBuilder()
       .setColor(0x4b0082)
@@ -226,12 +261,24 @@ module.exports = {
         },
         {
           name: "🎨 Your Style",
-          value: `**Current Theme:** ${this.getThemeName(preferences?.deck_theme || "classic")}\n**Reading Style:** ${preferences?.reading_style || "Detailed"}\n**AI Enhanced:** ${preferences?.ai_insights ? "✅ Yes" : "❌ No"}`,
+          value: `**Current Theme:** ${this.getThemeName(
+            preferences?.deck_theme || "classic"
+          )}\n**Reading Style:** ${
+            preferences?.reading_style || "Detailed"
+          }\n**AI Enhanced:** ${preferences?.ai_insights ? "✅ Yes" : "❌ No"}`,
           inline: true,
         },
         {
           name: "📈 Journey Stats",
-          value: `**Activity Level:** ${averageReadingsPerDay > 0 ? `${averageReadingsPerDay}/day` : "Getting started"}\n**Recent Focus:** ${recentReadings.length > 0 ? recentReadings[0].reading_type.replace('-', ' ') : "None yet"}\n**Streak:** Track coming soon!`,
+          value: `**Activity Level:** ${
+            averageReadingsPerDay > 0
+              ? `${averageReadingsPerDay}/day`
+              : "Getting started"
+          }\n**Recent Focus:** ${
+            recentReadings.length > 0
+              ? recentReadings[0].reading_type.replace("-", " ")
+              : "None yet"
+          }\n**Streak:** Track coming soon!`,
           inline: true,
         },
         {
@@ -240,7 +287,9 @@ module.exports = {
           inline: false,
         }
       )
-      .setFooter({ text: "Continue your journey to unlock more mystical insights! ✨" });
+      .setFooter({
+        text: "Continue your journey to unlock more mystical insights! ✨",
+      });
 
     // Add progress bar for collection completion
     const progress = Math.round((stats.uniqueCards / 78) * 100);
@@ -248,16 +297,22 @@ module.exports = {
 
     embed.addFields({
       name: "🔮 Collection Completion",
-      value: `${progressBar} **${progress}%**\n*${78 - stats.uniqueCards} cards remaining to discover*`,
+      value: `${progressBar} **${progress}%**\n*${
+        78 - stats.uniqueCards
+      } cards remaining to discover*`,
       inline: false,
     });
 
     // Add motivation based on progress
     let motivationText = "🌟 Keep exploring to discover new cards!";
-    if (progress >= 80) motivationText = "🏆 Amazing! You're almost a complete master!";
-    else if (progress >= 60) motivationText = "⭐ Excellent progress! You're becoming quite skilled!";
-    else if (progress >= 40) motivationText = "🌙 Good work! You're on a great mystical path!";
-    else if (progress >= 20) motivationText = "🌱 Nice start! Many mysteries await discovery!";
+    if (progress >= 80)
+      motivationText = "🏆 Amazing! You're almost a complete master!";
+    else if (progress >= 60)
+      motivationText = "⭐ Excellent progress! You're becoming quite skilled!";
+    else if (progress >= 40)
+      motivationText = "🌙 Good work! You're on a great mystical path!";
+    else if (progress >= 20)
+      motivationText = "🌱 Nice start! Many mysteries await discovery!";
 
     embed.addFields({
       name: "💫 Motivation",

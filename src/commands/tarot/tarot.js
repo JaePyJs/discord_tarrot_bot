@@ -176,18 +176,24 @@ module.exports = {
     if (cardUtils.isOnCooldown(userId)) {
       const remainingTime = cardUtils.getCooldownTime(userId);
       const maxCooldown = parseInt(process.env.COMMAND_COOLDOWN) || 30;
-      const progress = Math.max(0, Math.round(((maxCooldown - remainingTime) / maxCooldown) * 10));
+      const progress = Math.max(
+        0,
+        Math.round(((maxCooldown - remainingTime) / maxCooldown) * 10)
+      );
       const progressBar = "█".repeat(progress) + "░".repeat(10 - progress);
-      
+
       const embed = new EmbedBuilder()
         .setColor(0xff6b6b)
         .setTitle("🕐 The cards are recharging their mystical energy...")
         .setDescription(
-          `**Time remaining:** ${remainingTime} seconds\n\n**Progress:** ${progressBar} ${Math.round(((maxCooldown - remainingTime) / maxCooldown) * 100)}%`
+          `**Time remaining:** ${remainingTime} seconds\n\n**Progress:** ${progressBar} ${Math.round(
+            ((maxCooldown - remainingTime) / maxCooldown) * 100
+          )}%`
         )
         .addFields({
           name: "💡 While you wait",
-          value: "• Use `/card <name>` to learn about specific cards\n• Check `/deck collection` to see your progress\n• Browse `/spread list` for custom layouts",
+          value:
+            "• Use `/card <name>` to learn about specific cards\n• Check `/deck collection` to see your progress\n• Browse `/spread list` for custom layouts",
           inline: false,
         })
         .setFooter({ text: "Patience brings clarity to the mystical arts ✨" });
@@ -204,8 +210,10 @@ module.exports = {
       if (todayCount >= maxReadings) {
         const nextReset = new Date();
         nextReset.setHours(24, 0, 0, 0);
-        const hoursUntilReset = Math.ceil((nextReset - new Date()) / (1000 * 60 * 60));
-        
+        const hoursUntilReset = Math.ceil(
+          (nextReset - new Date()) / (1000 * 60 * 60)
+        );
+
         const embed = new EmbedBuilder()
           .setColor(0xff6b6b)
           .setTitle("🌙 Daily cosmic energy limit reached")
@@ -225,7 +233,8 @@ module.exports = {
             },
             {
               name: "🎯 What you can still do",
-              value: "• Learn about cards with `/card <name>`\n• Manage favorites with `/deck favorites`\n• Explore themes with `/deck theme`\n• Create custom spreads with `/spread create`",
+              value:
+                "• Learn about cards with `/card <name>`\n• Manage favorites with `/deck favorites`\n• Explore themes with `/deck theme`\n• Create custom spreads with `/spread create`",
               inline: false,
             }
           )
@@ -239,23 +248,31 @@ module.exports = {
       const aiEnhanced = interaction.options.getBoolean("ai-enhanced") || false;
 
       // Defer reply for longer operations with loading message
-      const isComplexReading = ["celtic-cross", "horseshoe", "relationship", "career"].includes(subcommand);
-      
+      const isComplexReading = [
+        "celtic-cross",
+        "horseshoe",
+        "relationship",
+        "career",
+      ].includes(subcommand);
+
       if (isComplexReading) {
         await interaction.deferReply({ ephemeral: isPrivate });
-        
+
         // Send interim loading message for complex readings
         const loadingEmbed = new EmbedBuilder()
           .setColor(0x4b0082)
           .setTitle("🔮 Consulting the cosmic forces...")
-          .setDescription(`Preparing your **${subcommand.replace('-', ' ')}** reading...`)
+          .setDescription(
+            `Preparing your **${subcommand.replace("-", " ")}** reading...`
+          )
           .addFields({
             name: "✨ The spirits are working",
-            value: "• Shuffling the mystical deck\n• Aligning cosmic energies\n• Drawing your cards",
+            value:
+              "• Shuffling the mystical deck\n• Aligning cosmic energies\n• Drawing your cards",
             inline: false,
           })
           .setFooter({ text: "This may take a moment for complex spreads" });
-          
+
         // For very complex readings, send a loading message first
         if (subcommand === "celtic-cross") {
           await interaction.editReply({ embeds: [loadingEmbed] });
@@ -394,26 +411,34 @@ module.exports = {
         response.components = components;
       }
 
-      await interaction.editReply(response);    } catch (error) {
+      await interaction.editReply(response);
+    } catch (error) {
       console.error("Error in tarot command:", error);
       logger.error(`Tarot command error for user ${userId}:`, error);
-      
+
       // Determine error type for better user messaging
-      const isConnectionError = error.message?.includes('connection') || error.message?.includes('database');
-      const isTimeoutError = error.message?.includes('timeout');
-      
+      const isConnectionError =
+        error.message?.includes("connection") ||
+        error.message?.includes("database");
+      const isTimeoutError = error.message?.includes("timeout");
+
       let errorTitle = "🚫 The spirits are temporarily disturbed";
-      let errorDescription = "Something mystical went wrong while consulting the cards.";
-      let helpText = "Please try again in a moment. If the issue persists, the cosmic energies may be unstable.";
-      
+      let errorDescription =
+        "Something mystical went wrong while consulting the cards.";
+      let helpText =
+        "Please try again in a moment. If the issue persists, the cosmic energies may be unstable.";
+
       if (isConnectionError) {
         errorTitle = "📡 Connection to the mystical realm lost";
         errorDescription = "Unable to connect to the spiritual database.";
-        helpText = "This is usually temporary. Please try again in 30-60 seconds.";
+        helpText =
+          "This is usually temporary. Please try again in 30-60 seconds.";
       } else if (isTimeoutError) {
         errorTitle = "⏰ The cards are taking longer than usual";
-        errorDescription = "The spiritual consultation is taking longer than expected.";
-        helpText = "Try a simpler reading like `/tarot single` or wait a moment before trying again.";
+        errorDescription =
+          "The spiritual consultation is taking longer than expected.";
+        helpText =
+          "Try a simpler reading like `/tarot single` or wait a moment before trying again.";
       }
 
       const errorEmbed = new EmbedBuilder()
@@ -422,7 +447,9 @@ module.exports = {
         .setDescription(errorDescription)
         .addFields({
           name: "🔧 What you can try",
-          value: helpText + "\n\n**Alternative actions:**\n• Use `/card <name>` to learn about specific cards\n• Check `/deck collection` for your stats\n• Try `/tarot help` for guidance",
+          value:
+            helpText +
+            "\n\n**Alternative actions:**\n• Use `/card <name>` to learn about specific cards\n• Check `/deck collection` for your stats\n• Try `/tarot help` for guidance",
           inline: false,
         })
         .setFooter({ text: "The mystical energies will stabilize soon ✨" })
@@ -498,7 +525,9 @@ module.exports = {
           inline: false,
         }
       )
-      .setFooter({ text: "✨ Remember: Tarot is for entertainment and self-reflection only" })
+      .setFooter({
+        text: "✨ Remember: Tarot is for entertainment and self-reflection only",
+      })
       .setTimestamp();
 
     await interaction.reply({ embeds: [helpEmbed] });
