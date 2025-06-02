@@ -4,7 +4,7 @@ A comprehensive Discord bot that brings the mystical art of tarot reading to you
 
 <div align="center">
 
-![Version](https://img.shields.io/badge/version-2.2.1-blue)
+![Version](https://img.shields.io/badge/version--blue)
 ![Discord.js](https://img.shields.io/badge/discord.js-v14-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 

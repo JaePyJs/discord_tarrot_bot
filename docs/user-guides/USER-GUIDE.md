@@ -1,6 +1,6 @@
 # 🔮 **DISCORD TAROT BOT - COMPLETE USER GUIDE**
 
-_Version 2.2.0 - Ultimate Mystical Experience_
+_Version  - Ultimate Mystical Experience_
 
 Welcome to the most comprehensive Discord tarot experience! This guide will help you master all the mystical features available.
 
@@ -415,7 +415,7 @@ All features work perfectly on mobile Discord:
 - Try a different reading type
 
 #### **Missing Features**
-- Ensure you're using the latest version (v2.2.0)
+- Ensure you're using the latest version (v)
 - Some themes require unlocking through practice
 - AI features require API key configuration
 

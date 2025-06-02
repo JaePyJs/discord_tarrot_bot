@@ -1,6 +1,6 @@
 # 🔮 **DISCORD TAROT BOT - QUICK COMMAND REFERENCE**
 
-_Version 2.2.0 - Ultimate Mystical Experience_
+_Version  - Ultimate Mystical Experience_
 
 ## 🚀 **ALL AVAILABLE COMMANDS (13 Total)**
 

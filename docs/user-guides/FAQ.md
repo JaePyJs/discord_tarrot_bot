@@ -1,6 +1,6 @@
 # ❓ **DISCORD TAROT BOT - FREQUENTLY ASKED QUESTIONS**
 
-_Version 2.2.0 - Ultimate Mystical Experience_
+_Version  - Ultimate Mystical Experience_
 
 ## 🔮 **GENERAL QUESTIONS**
 
