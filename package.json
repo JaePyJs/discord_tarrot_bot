@@ -6,18 +6,12 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "deploy-commands": "node deploy-commands.js",
-    "test": "node test-setup.js",
-    "test-all": "node test-all-features.js",
-    "setup": "node setup.js",
+    "deploy-commands": "node scripts/deploy-commands.js",
+    "test": "node tests/test-setup.js",
+    "test-all": "node tests/test-all-features.js",
+    "setup": "node scripts/setup.js",
     "setup-db": "node -e \"require('./src/database/init').initializeDatabase().then(() => console.log('Database initialized')).catch(console.error)\"",
-    "quick-setup": "npm install && node test-setup.js",
-    "migrate": "node scripts/migrate-to-v2.1.0.js",
-    "test-v2.1.0": "node test-v2.1.0-features.js",
-    "migrate-v2.2.0": "node scripts/migrate-to-v2.2.0.js",
-    "test-v2.2.0": "node test-v2.2.0-features.js",
-    "test-divination": "node test-divination-methods.js",
-    "test-analytics": "node test-analytics-features.js"
+    "quick-setup": "npm install && node tests/test-setup.js"
   },
   "keywords": [
     "discord",

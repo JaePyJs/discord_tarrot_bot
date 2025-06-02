@@ -1,0 +1,54 @@
+{
+  "commands": {
+    "tarot": {
+      "name": "tarot",
+      "description": "Erhalte eine mystische Tarot-Lesung",
+      "single": {
+        "name": "einzeln",
+        "description": "Ziehe eine einzelne Karte zur Orientierung"
+      },
+      "daily": {
+        "name": "täglich",
+        "description": "Tägliche Orientierungskarte"
+      }
+    },
+    "journal": {
+      "name": "tagebuch",
+      "description": "Verwalte dein persönliches Tarot-Lesetagebuch"
+    },
+    "reminder": {
+      "name": "erinnerung",
+      "description": "Richte persönliche Tarot-Leseerinnerungen ein"
+    }
+  },
+  "messages": {
+    "cooldown": "Die Karten brauchen Zeit zum Aufladen... Bitte warte {time} Sekunden.",
+    "welcome": "Willkommen zu deiner mystischen Tarot-Reise! 🔮",
+    "error": "Etwas ist mit den mystischen Energien schiefgelaufen. Bitte versuche es erneut.",
+    "reading_saved": "Deine Lesung wurde in deinem Tagebuch gespeichert.",
+    "reminder_set": "Deine Erinnerung wurde für {time} eingestellt.",
+    "no_readings": "Du hast noch keine Lesungen. Beginne deine Reise mit /tarot!",
+    "ai_enhanced": "Mit KI-Erkenntnissen erweitert",
+    "for_entertainment": "Nur zur Unterhaltung"
+  },
+  "cards": {
+    "upright": "Aufrecht",
+    "reversed": "Umgekehrt",
+    "keywords": "Schlüsselwörter",
+    "meaning": "Bedeutung",
+    "position": "Position"
+  },
+  "spreads": {
+    "single": "Einzelne Karte",
+    "three_card": "Drei-Karten-Legung",
+    "celtic_cross": "Keltisches Kreuz",
+    "daily": "Tageskarte",
+    "custom": "Benutzerdefinierte Legung"
+  },
+  "time": {
+    "seconds": "Sekunden",
+    "minutes": "Minuten",
+    "hours": "Stunden",
+    "days": "Tage"
+  }
+}

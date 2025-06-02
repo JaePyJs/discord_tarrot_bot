@@ -1,6 +1,6 @@
 // Simple test to verify the bot setup without connecting to Discord
-const cardUtils = require("./src/utils/cardUtils");
-const { initializeDatabase } = require("./src/database/init");
+const cardUtils = require("../src/utils/cardUtils");
+const { initializeDatabase } = require("../src/database/init");
 
 async function testSetup() {
   console.log("🔮 Testing Discord Tarot Bot Setup...\n");
@@ -30,7 +30,7 @@ async function testSetup() {
     const formattedCard = cardUtils.formatCard(singleCard[0]);
     console.log(`✅ Card formatted: ${formattedCard.title}`); // Test 4: Load command structure
     console.log("\n⚡ Testing command structure...");
-    const tarotCommand = require("./src/commands/tarot/tarot");
+    const tarotCommand = require("../src/commands/tarot/tarot");
     console.log(`✅ Tarot command loaded: ${tarotCommand.data.name}`);
 
     console.log("\n🎉 All tests passed! The bot is ready for deployment.");

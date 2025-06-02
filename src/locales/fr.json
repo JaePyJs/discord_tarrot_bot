@@ -1,0 +1,54 @@
+{
+  "commands": {
+    "tarot": {
+      "name": "tarot",
+      "description": "Obtenez une lecture de tarot mystique",
+      "single": {
+        "name": "simple",
+        "description": "Tirez une seule carte pour vous guider"
+      },
+      "daily": {
+        "name": "quotidien",
+        "description": "Carte de guidance quotidienne"
+      }
+    },
+    "journal": {
+      "name": "journal",
+      "description": "Gérez votre journal personnel de lecture de tarot"
+    },
+    "reminder": {
+      "name": "rappel",
+      "description": "Configurez des rappels personnels de lecture de tarot"
+    }
+  },
+  "messages": {
+    "cooldown": "Les cartes ont besoin de temps pour se recharger... Veuillez attendre {time} secondes.",
+    "welcome": "Bienvenue dans votre voyage mystique du tarot! 🔮",
+    "error": "Quelque chose s'est mal passé avec les énergies mystiques. Veuillez réessayer.",
+    "reading_saved": "Votre lecture a été enregistrée dans votre journal.",
+    "reminder_set": "Votre rappel a été défini pour {time}.",
+    "no_readings": "Vous n'avez pas encore de lectures. Commencez votre voyage avec /tarot!",
+    "ai_enhanced": "Amélioré avec des perspectives d'IA",
+    "for_entertainment": "À des fins de divertissement uniquement"
+  },
+  "cards": {
+    "upright": "À l'endroit",
+    "reversed": "Renversé",
+    "keywords": "Mots-clés",
+    "meaning": "Signification",
+    "position": "Position"
+  },
+  "spreads": {
+    "single": "Carte Unique",
+    "three_card": "Tirage à Trois Cartes",
+    "celtic_cross": "Croix Celtique",
+    "daily": "Carte du Jour",
+    "custom": "Tirage Personnalisé"
+  },
+  "time": {
+    "seconds": "secondes",
+    "minutes": "minutes",
+    "hours": "heures",
+    "days": "jours"
+  }
+}

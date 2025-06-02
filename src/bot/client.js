@@ -16,6 +16,17 @@ const DailyCardManager = require("../utils/dailyCard");
 const ReminderManager = require("../utils/reminderManager");
 const { handleButtonInteraction } = require("../utils/buttonHandlers");
 
+// Initialize database before creating client
+async function initialize() {
+  try {
+    await initializeDatabase();
+    logger.info("Database initialized successfully");
+  } catch (error) {
+    logger.error("Failed to initialize database:", error);
+    process.exit(1);
+  }
+}
+
 // Create a new client instance
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages],
@@ -27,6 +38,13 @@ client.commands = new Collection();
 // Initialize managers
 let dailyCardManager;
 let reminderManager;
+
+// Initialize the bot
+async function initBot() {
+  await initialize(); // Initialize database first
+  loadCommands(path.join(__dirname, "../commands"));
+  logger.info("Bot initialization complete");
+}
 
 // Load command files recursively
 function loadCommands(dir) {

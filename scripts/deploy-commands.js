@@ -30,7 +30,7 @@ function loadCommands(dir) {
 }
 
 // Load all commands from the new structure
-const commandsPath = path.join(__dirname, "src", "commands");
+const commandsPath = path.join(__dirname, "..", "src", "commands");
 loadCommands(commandsPath);
 
 // Construct and prepare an instance of the REST module
@@ -42,11 +42,17 @@ const rest = new REST().setToken(process.env.DISCORD_TOKEN);
     console.log(
       `🚀 Started refreshing ${commands.length} application (/) commands.`
     );
+    console.log(
+      `Using token: ${process.env.DISCORD_TOKEN ? "Provided" : "Missing"}`
+    );
+    console.log(`Client ID: ${process.env.CLIENT_ID}`);
+    console.log(`Guild ID: ${process.env.GUILD_ID || "Global deployment"}`);
 
     let data;
 
     if (process.env.GUILD_ID) {
       // Deploy to specific guild (faster for development)
+      console.log(`Deploying to guild: ${process.env.GUILD_ID}`);
       data = await rest.put(
         Routes.applicationGuildCommands(
           process.env.CLIENT_ID,

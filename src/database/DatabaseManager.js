@@ -402,12 +402,11 @@ class DatabaseManager {
   async getUserAchievements(userId) {
     const sql =
       this.dbType === "postgresql"
-        ? "SELECT achievement_id FROM user_achievements WHERE user_id = $1"
-        : "SELECT achievement_id FROM user_achievements WHERE user_id = ?";
+        ? "SELECT * FROM user_achievements WHERE user_id = $1 ORDER BY unlocked_at DESC"
+        : "SELECT * FROM user_achievements WHERE user_id = ? ORDER BY unlocked_at DESC";
 
     const result = await this.query(sql, [userId]);
-    const rows = this.dbType === "postgresql" ? result.rows : result.rows;
-    return rows.map((row) => row.achievement_id);
+    return this.dbType === "postgresql" ? result.rows : result.rows;
   }
 
   async addUserAchievement(userId, achievementId) {
@@ -542,6 +541,145 @@ class DatabaseManager {
       majorArcanaCount: 0,
       seasonalReadings: 0,
     };
+  }
+
+  // Get all active reminders from the database
+  async getAllActiveReminders() {
+    const sql =
+      this.dbType === "postgresql"
+        ? "SELECT * FROM reminders WHERE is_active = TRUE ORDER BY created_at ASC"
+        : "SELECT * FROM reminders WHERE is_active = 1 ORDER BY created_at ASC";
+
+    const result = await this.query(sql);
+    return this.dbType === "postgresql" ? result.rows : result.rows;
+  }
+
+  // Get a specific reading by ID
+  async getReadingById(readingId) {
+    const sql =
+      this.dbType === "postgresql"
+        ? "SELECT * FROM readings WHERE id = $1"
+        : "SELECT * FROM readings WHERE id = ?";
+
+    const result = await this.query(sql, [readingId]);
+    return this.dbType === "postgresql" ? result.rows[0] : result.rows[0];
+  }
+
+  // Create a new reminder
+  async createReminder(userId, reminderType, schedule, customMessage = null) {
+    const timestamp = this.getCurrentTimestamp();
+
+    const sql =
+      this.dbType === "postgresql"
+        ? "INSERT INTO reminders (user_id, reminder_type, schedule, custom_message, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id"
+        : "INSERT INTO reminders (user_id, reminder_type, schedule, custom_message, created_at) VALUES (?, ?, ?, ?, ?)";
+
+    const result = await this.query(sql, [
+      userId,
+      reminderType,
+      schedule,
+      customMessage,
+      timestamp,
+    ]);
+
+    return this.dbType === "postgresql" ? result.rows[0].id : result.insertId;
+  }
+
+  // Update an existing reminder
+  async updateReminder(reminderId, updateData) {
+    const timestamp = this.getCurrentTimestamp();
+    const setClause = Object.keys(updateData)
+      .map((key, index) => {
+        const paramSymbol =
+          this.dbType === "postgresql" ? `$${index + 1}` : "?";
+        return `${key} = ${paramSymbol}`;
+      })
+      .join(", ");
+
+    const sql =
+      this.dbType === "postgresql"
+        ? `UPDATE reminders SET ${setClause}, updated_at = $${
+            Object.keys(updateData).length + 1
+          } WHERE id = $${Object.keys(updateData).length + 2}`
+        : `UPDATE reminders SET ${setClause}, updated_at = ? WHERE id = ?`;
+
+    const params =
+      this.dbType === "postgresql"
+        ? [...Object.values(updateData), timestamp, reminderId]
+        : [...Object.values(updateData), timestamp, reminderId];
+
+    return await this.query(sql, params);
+  }
+
+  // Delete a reminder
+  async deleteReminder(reminderId) {
+    const sql =
+      this.dbType === "postgresql"
+        ? "DELETE FROM reminders WHERE id = $1"
+        : "DELETE FROM reminders WHERE id = ?";
+
+    return await this.query(sql, [reminderId]);
+  }
+
+  // Save a reading to the user's journal
+  async saveReadingToJournal(userId, readingId) {
+    try {
+      // First, check if the reading exists
+      const reading = await this.getReadingById(readingId);
+      if (!reading) {
+        throw new Error(`Reading with ID ${readingId} not found`);
+      }
+
+      // Check if the reading is already in the journal
+      const sql =
+        this.dbType === "postgresql"
+          ? "SELECT COUNT(*) as count FROM user_journal WHERE user_id = $1 AND reading_id = $2"
+          : "SELECT COUNT(*) as count FROM user_journal WHERE user_id = ? AND reading_id = ?";
+
+      const result = await this.query(sql, [userId, readingId]);
+      const row =
+        this.dbType === "postgresql" ? result.rows[0] : result.rows[0];
+
+      // If the reading is already in the journal, just return
+      if (row && parseInt(row.count) > 0) {
+        return { saved: false, message: "Reading is already in your journal" };
+      }
+
+      // Create the user_journal table if it doesn't exist
+      const createTableSql =
+        this.dbType === "postgresql"
+          ? `CREATE TABLE IF NOT EXISTS user_journal (
+              id SERIAL PRIMARY KEY,
+              user_id TEXT NOT NULL, 
+              reading_id INTEGER NOT NULL,
+              saved_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+              notes TEXT,
+              CONSTRAINT unique_user_reading UNIQUE (user_id, reading_id)
+            )`
+          : `CREATE TABLE IF NOT EXISTS user_journal (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              user_id TEXT NOT NULL, 
+              reading_id INTEGER NOT NULL,
+              saved_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+              notes TEXT,
+              UNIQUE (user_id, reading_id)
+            )`;
+
+      await this.query(createTableSql);
+
+      // Add the reading to the journal
+      const insertSql =
+        this.dbType === "postgresql"
+          ? "INSERT INTO user_journal (user_id, reading_id) VALUES ($1, $2) ON CONFLICT DO NOTHING"
+          : "INSERT OR IGNORE INTO user_journal (user_id, reading_id) VALUES (?, ?)";
+
+      await this.query(insertSql, [userId, readingId]);
+
+      return { saved: true, message: "Reading saved to journal" };
+    } catch (error) {
+      logger.error("Error saving reading to journal:", error);
+      throw error;
+    }
   }
 }
 

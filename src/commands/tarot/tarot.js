@@ -4,6 +4,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  MessageFlags,
 } = require("discord.js");
 const cardUtils = require("../../utils/cardUtils");
 const DatabaseManager = require("../../database/DatabaseManager");
@@ -198,7 +199,7 @@ module.exports = {
         })
         .setFooter({ text: "Patience brings clarity to the mystical arts ✨" });
 
-      return await interaction.reply({ embeds: [embed], ephemeral: true });
+      return await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
     }
 
     // Check daily limit
@@ -240,7 +241,7 @@ module.exports = {
           )
           .setFooter({ text: "Return tomorrow for fresh cosmic insights ✨" });
 
-        return await interaction.reply({ embeds: [embed], ephemeral: true });
+        return await interaction.reply({ embeds: [embed], flags: MessageFlags.Ephemeral });
       }
 
       // Get options
@@ -320,8 +321,8 @@ module.exports = {
           break;
       }
 
-      // Save reading to database
-      await db.saveReading(userId, guildId, readingType, cards);
+      // Save reading to database and get the reading ID
+      const readingId = await db.saveReading(userId, guildId, readingType, cards);
       await db.updateLastReading(userId);
 
       // Set cooldown
@@ -372,36 +373,36 @@ module.exports = {
 
       // Add navigation buttons for multi-card spreads
       if (cards.length > 1 && !isPrivate) {
-        const readingId = `${interaction.user.id}_${Date.now()}`;
+        const navReadingId = `${interaction.user.id}_${Date.now()}`;
         const navRow = new ActionRowBuilder().addComponents(
           new ButtonBuilder()
-            .setCustomId(`prev_${readingId}_0`)
+            .setCustomId(`prev_${navReadingId}_0`)
             .setLabel("◀ Previous")
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(true), // Start disabled
           new ButtonBuilder()
-            .setCustomId(`overview_${readingId}_0`)
+            .setCustomId(`overview_${navReadingId}_0`)
             .setLabel("📋 Overview")
             .setStyle(ButtonStyle.Primary),
           new ButtonBuilder()
-            .setCustomId(`next_${readingId}_0`)
+            .setCustomId(`next_${navReadingId}_0`)
             .setLabel("Next ▶")
             .setStyle(ButtonStyle.Secondary)
             .setDisabled(cards.length <= 1),
           new ButtonBuilder()
-            .setCustomId(`favorite_${readingId}_0`)
+            .setCustomId(`favorite_${navReadingId}_0`)
             .setLabel("⭐ Favorite")
             .setStyle(ButtonStyle.Success),
           new ButtonBuilder()
-            .setCustomId(`share_${readingId}_0`)
+            .setCustomId(`share_${navReadingId}_0`)
             .setLabel("📤 Share")
             .setStyle(ButtonStyle.Secondary)
         );
         components.push(navRow);
       }
 
-      // Create action buttons for community features
-      const actionRow = this.createActionButtons(readingType, isPrivate);
+      // Create action buttons for community features using the actual reading ID
+      const actionRow = this.createActionButtons(readingType, isPrivate, readingId);
       if (actionRow && !isPrivate) {
         components.push(actionRow);
       }
@@ -458,12 +459,11 @@ module.exports = {
       if (interaction.deferred) {
         await interaction.editReply({ embeds: [errorEmbed] });
       } else {
-        await interaction.reply({ embeds: [errorEmbed], ephemeral: true });
+        await interaction.reply({ embeds: [errorEmbed], flags: MessageFlags.Ephemeral });
       }
     } finally {
-      if (db) {
-        db.close();
-      }
+      // Don't close database connection here as button interactions may need it later
+      // The connection will be managed by the DatabaseManager's connection pooling
     }
   },
 
@@ -695,37 +695,26 @@ module.exports = {
   },
 
   // Create action buttons for community features
-  createActionButtons(readingType, isPrivate) {
+  createActionButtons(readingType, isPrivate, readingId) {
     if (isPrivate) return null;
 
     const actionRow = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId(`share_reading_${Date.now()}`)
+        .setCustomId(`share_reading_${readingId}`)
         .setLabel("Share Reading")
         .setStyle(ButtonStyle.Primary)
         .setEmoji("📤"),
       new ButtonBuilder()
-        .setCustomId(`save_reading_${Date.now()}`)
+        .setCustomId(`save_reading_${readingId}`)
         .setLabel("Save to Journal")
         .setStyle(ButtonStyle.Secondary)
         .setEmoji("📖"),
       new ButtonBuilder()
-        .setCustomId(`get_reflection_${Date.now()}`)
+        .setCustomId(`get_reflection_${readingId}`)
         .setLabel("Reflection Questions")
         .setStyle(ButtonStyle.Secondary)
         .setEmoji("🤔")
     );
-
-    // Add AI insight button if available
-    if (aiEngine.isAvailable()) {
-      actionRow.addComponents(
-        new ButtonBuilder()
-          .setCustomId(`ai_insight_${Date.now()}`)
-          .setLabel("AI Insight")
-          .setStyle(ButtonStyle.Success)
-          .setEmoji("🤖")
-      );
-    }
 
     return actionRow;
   },
@@ -760,6 +749,7 @@ module.exports = {
     return titles[readingType] || "Tarot Reading";
   },
 
+  // Get enhanced reading description
   getReadingDescription(readingType) {
     const descriptions = {
       single:

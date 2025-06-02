@@ -1,6 +1,6 @@
 // Comprehensive test of all Discord Tarot Bot features
-const cardUtils = require("./src/utils/cardUtils");
-const { initializeDatabase } = require("./src/database/init");
+const cardUtils = require("../src/utils/cardUtils");
+const { initializeDatabase } = require("../src/database/init");
 
 async function testAllFeatures() {
   console.log("🔮 Testing Complete Discord Tarot Bot Features...\n");
@@ -103,18 +103,17 @@ async function testAllFeatures() {
     // Test 6: Command structure
     console.log("⚡ Testing command structure...");
 
-    const tarotCommand = require("./src/commands/tarot/tarot");
+    const tarotCommand = require("../src/commands/tarot/tarot");
     console.log(`✅ Tarot command loaded: ${tarotCommand.data.name}`);
     console.log(`   - Subcommands: ${tarotCommand.data.options.length}`);
-
-    const profileCommand = require("./src/commands/user/profile");
+    const profileCommand = require("../src/commands/user/profile");
     console.log(`✅ Profile command loaded: ${profileCommand.data.name}`);
 
-    const cardCommand = require("./src/commands/tarot/card");
+    const cardCommand = require("../src/commands/tarot/card");
     console.log(`✅ Card lookup command loaded: ${cardCommand.data.name}`);
     console.log(`   - Has autocomplete: ${!!cardCommand.autocomplete}`);
 
-    const statsCommand = require("./src/commands/admin/stats");
+    const statsCommand = require("../src/commands/admin/stats");
     console.log(`✅ Stats command loaded: ${statsCommand.data.name}\n`);
 
     // Test 7: Card search functionality

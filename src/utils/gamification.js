@@ -354,6 +354,52 @@ class GamificationManager {
       return null;
     }
   }
+
+  // Get list of achievements
+  async getAchievements() {
+    return this.achievementCatalog;
+  }
+
+  // Add progress toward an achievement or quest goal
+  async addProgress(userId, progressType, incrementBy = 1) {
+    try {
+      // Get current user stats
+      const stats = await this.db.getUserCardStats(userId);
+
+      // Update progress based on the type
+      switch (progressType) {
+        case "readings":
+          // Increment total readings count
+          // This is automatically handled by the database when saving a reading
+          break;
+        case "journal_entries":
+          // Journal entries are tracked in user_journal table
+          // Check if we need to unlock any achievements
+          await this.checkJournalAchievements(userId);
+          break;
+        case "reflections":
+          // Track reflections for achievements
+          await this.checkReflectionAchievements(userId);
+          break;
+        default:
+          // For other custom progress types
+          logger.debug(
+            `Progress added for ${userId} - ${progressType}: +${incrementBy}`
+          );
+      }
+
+      return true;
+    } catch (error) {
+      logger.error(`Error adding progress for ${progressType}:`, error);
+      return false;
+    }
+  }
+
+  // Check if user qualifies for journal-related achievements
+  async checkJournalAchievements(userId) {
+    // This would query the journal entries count and award achievements
+    // Implementation depends on specific achievement criteria
+  }
 }
 
 module.exports = GamificationManager;

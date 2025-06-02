@@ -42,39 +42,33 @@ A comprehensive Discord bot that brings the mystical art of tarot reading to you
 ### Quick Setup
 
 1. **Clone the repository:**
-
    ```bash
    git clone https://github.com/username/discord-tarot-bot.git
    cd discord-tarot-bot
    ```
 
 2. **Install dependencies:**
-
    ```bash
    npm install
    ```
 
 3. **Create environment configuration:**
-
    ```bash
    cp .env.example .env
    ```
 
 4. **Edit the `.env` file with your Discord credentials:**
-
    ```
    DISCORD_TOKEN=your_bot_token
    CLIENT_ID=your_application_id
    ```
 
 5. **Run the setup script:**
-
    ```bash
    npm run setup
    ```
 
 6. **Deploy commands to Discord:**
-
    ```bash
    npm run deploy-commands
    ```
@@ -87,7 +81,6 @@ A comprehensive Discord bot that brings the mystical art of tarot reading to you
 ### Docker Installation
 
 1. **Build the container:**
-
    ```bash
    docker build -t discord-tarot-bot .
    ```
@@ -122,7 +115,6 @@ For more detailed configuration, see `docs/setup/ENHANCED_SETUP_GUIDE.md`
 The bot supports two database types:
 
 1. **SQLite** (Default): Great for small to medium servers
-
    - No additional setup required
    - Data stored in `src/database/tarot.db`
 
@@ -137,11 +129,9 @@ Once the bot is running and invited to your server, users can interact with it u
 ### First-time Setup
 
 1. **Invite the bot to your server** using the OAuth2 URL generator in Discord Developer Portal
-
    - Required permissions: `Send Messages`, `Embed Links`, `Attach Files`, `Use Slash Commands`
 
 2. **Deploy commands** to make them available in your server
-
    ```bash
    npm run deploy-commands
    ```
@@ -155,36 +145,36 @@ Once the bot is running and invited to your server, users can interact with it u
 
 ### Core Commands
 
-| Command               | Description                           | Options         |
-| --------------------- | ------------------------------------- | --------------- |
-| `/tarot single`       | Draw a single card for quick guidance | theme, question |
-| `/tarot three-card`   | Past, Present, Future spread          | theme, question |
-| `/tarot celtic-cross` | 10-card comprehensive reading         | theme, question |
-| `/tarot yes-no`       | Answer a yes/no question              | question        |
-| `/tarot horseshoe`    | 7-card spread for choices             | theme, question |
-| `/tarot daily`        | Daily guidance card                   | theme           |
-| `/tarot career`       | 5-card career path reading            | theme, question |
-| `/tarot relationship` | 6-card relationship insight           | theme, question |
+| Command | Description | Options |
+|---------|-------------|---------|
+| `/tarot single` | Draw a single card for quick guidance | theme, question |
+| `/tarot three-card` | Past, Present, Future spread | theme, question |
+| `/tarot celtic-cross` | 10-card comprehensive reading | theme, question |
+| `/tarot yes-no` | Answer a yes/no question | question |
+| `/tarot horseshoe` | 7-card spread for choices | theme, question |
+| `/tarot daily` | Daily guidance card | theme |
+| `/tarot career` | 5-card career path reading | theme, question |
+| `/tarot relationship` | 6-card relationship insight | theme, question |
 
 ### Utility Commands
 
-| Command             | Description                    |
-| ------------------- | ------------------------------ |
+| Command | Description |
+|---------|-------------|
 | `/card name:[card]` | Look up specific card meanings |
-| `/deck collection`  | View your collected cards      |
-| `/journal view`     | See your saved readings        |
-| `/profile view`     | Check your tarot usage stats   |
-| `/oracle daily`     | Get an oracle card message     |
-| `/iching cast`      | Cast an I-Ching hexagram       |
-| `/runes cast`       | Cast a Norse rune reading      |
+| `/deck collection` | View your collected cards |
+| `/journal view` | See your saved readings |
+| `/profile view` | Check your tarot usage stats |
+| `/oracle daily` | Get an oracle card message |
+| `/iching cast` | Cast an I-Ching hexagram |
+| `/runes cast` | Cast a Norse rune reading |
 
 ### Admin Commands
 
-| Command             | Description                            |
-| ------------------- | -------------------------------------- |
-| `/admin settings`   | Configure bot settings for your server |
-| `/analytics report` | Generate usage statistics              |
-| `/stats server`     | View server engagement metrics         |
+| Command | Description |
+|---------|-------------|
+| `/admin settings` | Configure bot settings for your server |
+| `/analytics report` | Generate usage statistics |
+| `/stats server` | View server engagement metrics |
 
 For a complete list of commands and detailed explanations, see [Commands Documentation](docs/user-guides/discord-commands-tutorial.md)
 
@@ -193,7 +183,7 @@ For a complete list of commands and detailed explanations, see [Commands Documen
 ### Project Structure
 
 ```
-discord-tarot-bot/
+discord-tarrot-bot/
 ├── 📄 index.js, package.json, README.md
 ├── 🗂️ src/ (commands, utils, database, data, locales)
 ├── 📚 docs/ (setup, user-guides, development)
@@ -249,6 +239,14 @@ If slash commands are not appearing:
 3. It may take up to an hour for global commands to propagate
 
 For more troubleshooting steps, see [FAQ](docs/user-guides/FAQ.md)
+
+## 👥 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](docs/development/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## 📜 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## ⚠️ Disclaimer
 
