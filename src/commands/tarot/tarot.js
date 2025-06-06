@@ -407,6 +407,17 @@ module.exports = {
         components.push(actionRow);
       }
 
+      // Add Reflection button if not private
+      if (!isPrivate && readingId) {
+        const reflectionRow = new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId(`reflection_${readingId}`)
+            .setLabel('📝 Reflection')
+            .setStyle(ButtonStyle.Secondary)
+        );
+        components.push(reflectionRow);
+      }
+
       const response = { embeds };
       if (components.length > 0) {
         response.components = components;

@@ -121,6 +121,34 @@ client.once("ready", async () => {
 
 // Event: Handle interactions (commands and autocomplete)
 client.on("interactionCreate", async (interaction) => {
+  // Handle modal submissions (reflection)
+  if (interaction.isModalSubmit()) {
+    try {
+      const { customId } = interaction;
+      if (customId.startsWith('reflection_modal_')) {
+        // Extract readingId from customId
+        const readingId = customId.replace('reflection_modal_', '');
+        const reflectionText = interaction.fields.getTextInputValue('reflection_text');
+        // TODO: Save reflectionText to DB/journal if desired
+        logger.info(`Reflection submitted for reading ${readingId}: ${reflectionText}`);
+        await interaction.reply({
+          content: 'Your reflection has been saved! Thank you for sharing your thoughts.',
+          ephemeral: true
+        });
+        return;
+      }
+    } catch (error) {
+      logger.error('Error handling reflection modal submission:', error);
+      if (!interaction.replied) {
+        await interaction.reply({
+          content: 'An error occurred while saving your reflection.',
+          ephemeral: true
+        });
+      }
+      return;
+    }
+  }
+
   // Handle button interactions
   if (interaction.isButton()) {
     try {
