@@ -44,10 +44,14 @@ temp/
 ehthumbs.db
 Thumbs.db
 
+# Test artifacts
+coverage/
+.nyc_output/
+
 # Cache directories
 .cache/
 .npm
-.eslintcache
+eslintcache
 
 # Coverage reports
 coverage/

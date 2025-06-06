@@ -124,6 +124,15 @@ client.on("interactionCreate", async (interaction) => {
   // Handle button interactions
   if (interaction.isButton()) {
     try {
+      logger.info(`Button interaction received: ${interaction.customId}`, {
+        userId: interaction.user.id,
+        channelId: interaction.channelId,
+        messageId: interaction.message.id,
+        guildId: interaction.guildId,
+        componentType: interaction.componentType,
+        component: interaction.component
+      });
+
       const startTime = Date.now();
       await handleButtonInteraction(interaction);
       const executionTime = Date.now() - startTime;
@@ -133,22 +142,38 @@ client.on("interactionCreate", async (interaction) => {
         userId: interaction.user.id,
       });
     } catch (error) {
-      logger.error("Error handling button interaction:", error);
+      logger.error("Error handling button interaction:", {
+        error: error.message,
+        stack: error.stack,
+        interaction: {
+          id: interaction.id,
+          customId: interaction.customId,
+          userId: interaction.user?.id,
+          messageId: interaction.message?.id,
+          channelId: interaction.channelId,
+          guildId: interaction.guildId
+        }
+      });
 
       const errorMessage = {
-        content:
-          "🚫 There was an error processing your button interaction! The spirits seem disturbed...",
+        content: "🚫 There was an error processing your button interaction! The spirits seem disturbed...",
         ephemeral: true,
+        components: [] // Remove any action rows that might cause issues
       };
 
       try {
-        if (interaction.replied || interaction.deferred) {
+        if (interaction.replied) {
           await interaction.followUp(errorMessage);
+        } else if (interaction.deferred) {
+          await interaction.editReply(errorMessage);
         } else {
           await interaction.reply(errorMessage);
         }
       } catch (followUpError) {
-        logger.error("Failed to send button error message:", followUpError);
+        logger.error("Failed to send button error message:", {
+          error: followUpError.message,
+          stack: followUpError.stack
+        });
       }
     }
     return;

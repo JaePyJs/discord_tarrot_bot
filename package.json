@@ -7,11 +7,19 @@
     "start": "node index.js",
     "dev": "nodemon index.js",
     "deploy-commands": "node scripts/deploy-commands.js",
-    "test": "node tests/test-setup.js",
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "NODE_ENV=test jest tests/integration --runInBand",
+    "test:unit": "NODE_ENV=test jest tests/unit",
+    "test:e2e": "NODE_ENV=test jest tests/e2e --runInBand",
+    "test:legacy": "node tests/test-setup.js",
     "test-all": "node tests/test-all-features.js",
     "setup": "node scripts/setup.js",
     "setup-db": "node -e \"require('./src/database/init').initializeDatabase().then(() => console.log('Database initialized')).catch(console.error)\"",
-    "quick-setup": "npm install && node tests/test-setup.js"
+    "quick-setup": "npm install && node tests/test-setup.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix"
   },
   "keywords": [
     "discord",
@@ -22,18 +30,20 @@
   "author": "Your Name",
   "license": "MIT",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "discord.js": "^14.14.1",
-    "sqlite3": "^5.1.6",
-    "pg": "^8.11.3",
-    "pg-pool": "^3.6.1",
     "dotenv": "^16.3.1",
+    "joi": "^17.11.0",
+    "moment-timezone": "^0.5.43",
     "node-cron": "^3.0.3",
     "node-fetch": "^3.3.2",
-    "moment-timezone": "^0.5.43",
-    "bcrypt": "^5.1.1",
-    "joi": "^17.11.0"
+    "pg": "^8.11.3",
+    "pg-pool": "^3.6.1",
+    "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-extended": "^5.0.3",
     "nodemon": "^3.0.2"
   },
   "engines": {
